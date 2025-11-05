@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $extractedText = file_get_contents($outputFile . ".txt");
                 $cleanText = preg_replace('/\s+/', ' ', $extractedText);
                 $cleanTextLower = strtolower(trim($cleanText));
+                $normalized = preg_replace('/[^a-z0-9 ]+/', ' ', $cleanTextLower);
                 
                 // Check for variations
                 $hasSiniloan = (stripos($cleanTextLower, "siniloan") !== false || 
@@ -50,20 +51,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                              stripos($cleanTextLower, "iaguna") !== false);
 
                 // Check for valid barangays
-                $validBarangays = ['acevida', 'bagong pag-asa', 'bagumbarangay', 'buhay', 'gen. luna', 
-                                  'halayhayin', 'mendiola', 'kapatalan', 'laguio', 'liyang', 'magsaysay', 
-                                  'p. burgos', 'g. redor', 'salubungan', 'wawa', 'j. rizal', 'mayatba', 
-                                  'llvac', 'pandenio', 'macatad'];
+                $validBarangays = [
+                    'acevida', 'bagong pag asa', 'bagumbarangay', 'buhay', 'gen luna', 'general luna',
+                    'halayhayin', 'mendiola', 'kapatalan', 'laguio', 'liyang', 'magsaysay',
+                    'p burgos', 'g redor', 'salubungan', 'wawa', 'j rizal', 'mayatba',
+                    'llavac', 'pandenio', 'macatad'
+                ];
                 
                 $foundBarangays = [];
                 foreach ($validBarangays as $barangay) {
-                    if (stripos($cleanTextLower, $barangay) !== false) {
+                    if (stripos($normalized, $barangay) !== false) {
                         $foundBarangays[] = $barangay;
                     }
                 }
 
                 $hasValidBarangay = !empty($foundBarangays);
-                $isValidID = ($hasSiniloan && $hasLaguna) || ($hasValidBarangay && $hasLaguna && stripos($cleanTextLower, "siniloan") !== false);
+                // Mirror the app logic: valid if (Siniloan && Laguna) OR (any Valid Barangay)
+                $isValidID = ($hasSiniloan && $hasLaguna) || $hasValidBarangay;
 
                 echo "<h3>OCR Debug Results:</h3>";
                 echo "<p><strong>Raw OCR Text:</strong></p>";

@@ -82,6 +82,8 @@ if (isset($_POST['btn_verify'])) {
                 
                 // More flexible address matching to handle OCR errors and barangay names
                 $cleanTextLower = strtolower(trim($cleanText));
+                // Normalized version without punctuation for barangay matching
+                $normalized = preg_replace('/[^a-z0-9 ]+/', ' ', $cleanTextLower);
                 
                 // Check for variations of "Siniloan" (handles common OCR errors)
                 $hasSiniloan = (stripos($cleanTextLower, "siniloan") !== false || 
@@ -96,20 +98,26 @@ if (isset($_POST['btn_verify'])) {
                              stripos($cleanTextLower, "iaguna") !== false);
 
                 // Also check if it contains any valid barangay name from Siniloan
-                $validBarangays = ['acevida', 'bagong pag-asa', 'bagumbarangay', 'buhay', 'gen. luna', 
-                                  'halayhayin', 'mendiola', 'kapatalan', 'laguio', 'liyang', 'magsaysay', 
-                                  'p. burgos', 'g. redor', 'salubungan', 'wawa', 'j. rizal', 'mayatba', 
-                                  'llvac', 'pandenio', 'macatad'];
+                // Include common variants without punctuation/abbreviations
+                $validBarangays = [
+                    'acevida', 'bagong pag asa', 'bagumbarangay', 'buhay', 'gen luna', 'general luna',
+                    'halayhayin', 'mendiola', 'kapatalan', 'laguio', 'liyang', 'magsaysay',
+                    'p burgos', 'g redor', 'salubungan', 'wawa', 'j rizal', 'mayatba',
+                    'llavac', 'pandenio', 'macatad'
+                ];
                 
                 $hasValidBarangay = false;
                 foreach ($validBarangays as $barangay) {
-                    if (stripos($cleanTextLower, $barangay) !== false) {
+                    if (stripos($normalized, $barangay) !== false) {
                         $hasValidBarangay = true;
                         break;
                     }
                 }
 
-                if (($hasSiniloan && $hasLaguna) || ($hasValidBarangay && $hasLaguna && stripos($cleanTextLower, "siniloan") !== false)) {
+                // Accept if:
+                // 1) both Siniloan and Laguna are detected; OR
+                // 2) any valid Siniloan barangay is detected (even if Siniloan/Laguna aren't visible)
+                if (($hasSiniloan && $hasLaguna) || $hasValidBarangay) {
                     $addressValue = "Siniloan, Laguna";
                     $addressBorder = "border: 2px solid green;";
 
