@@ -79,8 +79,37 @@ if (isset($_POST['btn_verify'])) {
             if ($return_var === 0 && file_exists($outputFile . ".txt")) {
                 $extractedText = file_get_contents($outputFile . ".txt");
                 $cleanText = preg_replace('/\s+/', ' ', $extractedText);
+                
+                // More flexible address matching to handle OCR errors and barangay names
+                $cleanTextLower = strtolower(trim($cleanText));
+                
+                // Check for variations of "Siniloan" (handles common OCR errors)
+                $hasSiniloan = (stripos($cleanTextLower, "siniloan") !== false || 
+                               stripos($cleanTextLower, "sin1loan") !== false ||
+                               stripos($cleanTextLower, "sinilaon") !== false ||
+                               stripos($cleanTextLower, "siniioan") !== false ||
+                               stripos($cleanTextLower, "similoan") !== false);
+                               
+                // Check for variations of "Laguna"  
+                $hasLaguna = (stripos($cleanTextLower, "laguna") !== false ||
+                             stripos($cleanTextLower, "1aguna") !== false ||
+                             stripos($cleanTextLower, "iaguna") !== false);
 
-                if (stripos($cleanText, "Siniloan, Laguna") !== false) {
+                // Also check if it contains any valid barangay name from Siniloan
+                $validBarangays = ['acevida', 'bagong pag-asa', 'bagumbarangay', 'buhay', 'gen. luna', 
+                                  'halayhayin', 'mendiola', 'kapatalan', 'laguio', 'liyang', 'magsaysay', 
+                                  'p. burgos', 'g. redor', 'salubungan', 'wawa', 'j. rizal', 'mayatba', 
+                                  'llvac', 'pandenio', 'macatad'];
+                
+                $hasValidBarangay = false;
+                foreach ($validBarangays as $barangay) {
+                    if (stripos($cleanTextLower, $barangay) !== false) {
+                        $hasValidBarangay = true;
+                        break;
+                    }
+                }
+
+                if (($hasSiniloan && $hasLaguna) || ($hasValidBarangay && $hasLaguna && stripos($cleanTextLower, "siniloan") !== false)) {
                     $addressValue = "Siniloan, Laguna";
                     $addressBorder = "border: 2px solid green;";
 
@@ -90,7 +119,9 @@ if (isset($_POST['btn_verify'])) {
         });
     </script>";
                 } else {
-                    $addressValue = "Address not valid. Must be from Siniloan, Laguna only";
+                    // Add debug information to help identify issues
+                    $debugInfo = "Debug: OCR Text: " . substr($cleanText, 0, 100) . "...";
+                    $addressValue = "Address not valid. Must be from Siniloan, Laguna only. " . $debugInfo;
                     $addressBorder = "border: 2px solid red;";
 
                     echo "<script>
