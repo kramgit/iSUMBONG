@@ -79,7 +79,7 @@ include('connectMySql.php');
         }
         
         .feature-card {
-            border: none;
+            border: 3px solid #1e3c72 !important;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
@@ -492,6 +492,85 @@ include('connectMySql.php');
             }
         }
         
+        /* Threat Information Cards Styling */
+        .threat-info-card {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #1e3c72 !important;
+        }
+        
+        .threat-info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+        }
+        
+        .threat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .threat-icon i {
+            font-size: 1.5rem !important;
+        }
+        
+        .threat-info-card .card-body {
+            padding: 1.25rem !important;
+        }
+        
+        .threat-info-card .card-title {
+            font-size: 0.95rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .threat-info-card .card-text {
+            font-size: 0.8rem !important;
+            line-height: 1.4;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .threat-info-card .list-unstyled {
+            font-size: 0.75rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .threat-info-card .list-unstyled li {
+            margin-bottom: 0.2rem;
+        }
+        
+        .threat-info-card:hover .threat-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        @media (max-width: 575px) {
+            .threat-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .threat-icon i {
+                font-size: 1.3rem !important;
+            }
+            
+            .threat-info-card .card-body {
+                padding: 1rem !important;
+            }
+            
+            .threat-info-card .card-title {
+                font-size: 0.9rem !important;
+            }
+            
+            .threat-info-card .card-text {
+                font-size: 0.75rem !important;
+            }
+        }
+        
         /* Enhanced button responsiveness */
         @media (max-width: 575px) {
             .hero-buttons {
@@ -759,6 +838,144 @@ include('connectMySql.php');
         </div>
     </section>
 
+    <!-- Threats Information Section -->
+    <section class="py-4 py-md-5" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);">
+        <div class="container">
+            <div class="row text-center mb-4 mb-md-5">
+                <div class="col-12">
+                    <h2 class="font-weight-bold" style="color: #2c3e50;">Types of Threats You Can Report</h2>
+                    <p class="text-muted">Comprehensive guide to cybersecurity incidents and threats</p>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center">
+                <!-- Phishing Attack -->
+                <div class="col-6 col-md-4 col-lg-4 mb-3">
+                    <div class="card h-100 border-0 shadow threat-info-card" onclick="showThreatModal('phishing')" style="cursor: pointer;">
+                        <div class="card-body text-center">
+                            <div class="threat-icon mb-2 bg-danger">
+                                <i class="fas fa-fish text-white"></i>
+                            </div>
+                            <h5 class="card-title font-weight-bold text-danger">Panlilinlang sa Internet (Phishing)</h5>
+                            <p class="card-text">Mga manlolokong mensahe o email na naglalayong nakawin ang inyong personal na impormasyon, password, o datos pangkabuhayan.</p>
+                            <ul class="list-unstyled text-left small mt-3">
+                                <li><i class="fas fa-exclamation-circle text-danger mr-2"></i>Pekeng login page</li>
+                                <li><i class="fas fa-exclamation-circle text-danger mr-2"></i>Kahina-hinalang link sa email</li>
+                                <li><i class="fas fa-exclamation-circle text-danger mr-2"></i>Pagpapanggap na ibang tao</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted"><i class="fas fa-mouse-pointer mr-1"></i>I-click para sa detalyadong paliwanag</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Identity Theft -->
+                <div class="col-6 col-md-4 col-lg-4 mb-3">
+                    <div class="card h-100 border-0 shadow threat-info-card" onclick="showThreatModal('identity')" style="cursor: pointer;">
+                        <div class="card-body text-center">
+                            <div class="threat-icon mb-2 bg-info">
+                                <i class="fas fa-user-secret text-white"></i>
+                            </div>
+                            <h5 class="card-title font-weight-bold text-info">Pagnanakaw ng Pagkakakilanlan (Identity Theft)</h5>
+                            <p class="card-text">Ang di-awtorisadong paggamit ng personal na impormasyon ng isang tao upang magpanggap o pasukin ang kanilang mga account.</p>
+                            <ul class="list-unstyled text-left small mt-3">
+                                <li><i class="fas fa-exclamation-circle text-info mr-2"></i>Nakawin ang ID o dokumento</li>
+                                <li><i class="fas fa-exclamation-circle text-info mr-2"></i>Hindi awtorisadong pag-access ng account</li>
+                                <li><i class="fas fa-exclamation-circle text-info mr-2"></i>Pekeng profile</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted"><i class="fas fa-mouse-pointer mr-1"></i>I-click para sa detalyadong paliwanag</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Online Fraud -->
+                <div class="col-6 col-md-4 col-lg-4 mb-3">
+                    <div class="card h-100 border-0 shadow threat-info-card" onclick="showThreatModal('onlinefraud')" style="cursor: pointer;">
+                        <div class="card-body text-center">
+                            <div class="threat-icon mb-2 bg-success">
+                                <i class="fas fa-money-bill-wave text-white"></i>
+                            </div>
+                            <h5 class="card-title font-weight-bold text-success">Pandaraya sa Internet (Online Fraud)</h5>
+                            <p class="card-text">Mga mapanlinlang na gawain sa internet tulad ng panloloko sa pera, investment scam, at iba pang online scams.</p>
+                            <ul class="list-unstyled text-left small mt-3">
+                                <li><i class="fas fa-exclamation-circle text-success mr-2"></i>Pandaraya sa credit card at banking</li>
+                                <li><i class="fas fa-exclamation-circle text-success mr-2"></i>Panloloko sa investment at online shopping</li>
+                                <li><i class="fas fa-exclamation-circle text-success mr-2"></i>Romance scam at job offer scam</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted"><i class="fas fa-mouse-pointer mr-1"></i>I-click para sa detalyadong paliwanag</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hacking/Unauthorized Access -->
+                <div class="col-6 col-md-4 col-lg-4 mb-3">
+                    <div class="card h-100 border-0 shadow threat-info-card" onclick="showThreatModal('hacking')" style="cursor: pointer;">
+                        <div class="card-body text-center">
+                            <div class="threat-icon mb-2" style="background: #6f42c1;">
+                                <i class="fas fa-user-lock text-white"></i>
+                            </div>
+                            <h5 class="card-title font-weight-bold" style="color: #6f42c1;">Pagpasok Nang Walang Pahintulot (Hacking)</h5>
+                            <p class="card-text">Ang iligal na pag-access sa mga computer system, network, o account nang walang awtorisasyon.</p>
+                            <ul class="list-unstyled text-left small mt-3">
+                                <li><i class="fas fa-exclamation-circle mr-2" style="color: #6f42c1;"></i>Pag-agaw ng account</li>
+                                <li><i class="fas fa-exclamation-circle mr-2" style="color: #6f42c1;"></i>Hindi awtorisadong pagpasok sa network</li>
+                                <li><i class="fas fa-exclamation-circle mr-2" style="color: #6f42c1;"></i>Pagsira sa system</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted"><i class="fas fa-mouse-pointer mr-1"></i>I-click para sa detalyadong paliwanag</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cyberbullying/Harassment -->
+                <div class="col-6 col-md-4 col-lg-4 mb-3">
+                    <div class="card h-100 border-0 shadow threat-info-card" onclick="showThreatModal('cyberbullying')" style="cursor: pointer;">
+                        <div class="card-body text-center">
+                            <div class="threat-icon mb-2" style="background: #e83e8c;">
+                                <i class="fas fa-bullhorn text-white"></i>
+                            </div>
+                            <h5 class="card-title font-weight-bold" style="color: #e83e8c;">Pang-aabuso sa Internet (Cyberbullying)</h5>
+                            <p class="card-text">Pang-aapi, pagbabanta, o pananakot sa pamamagitan ng internet at social media.</p>
+                            <ul class="list-unstyled text-left small mt-3">
+                                <li><i class="fas fa-exclamation-circle mr-2" style="color: #e83e8c;"></i>Pagbabanta online</li>
+                                <li><i class="fas fa-exclamation-circle mr-2" style="color: #e83e8c;"></i>Pag-uusig sa internet</li>
+                                <li><i class="fas fa-exclamation-circle mr-2" style="color: #e83e8c;"></i>Pang-aapi sa digital</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted"><i class="fas fa-mouse-pointer mr-1"></i>I-click para sa detalyadong paliwanag</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="alert text-center border-0" style="background: transparent; color: #333;">
+                        <h5 class="mb-3" style="color: #333;">Don't Wait - Report Incidents Immediately</h5>
+                        <p class="mb-3" style="color: #333;">If you've experienced any of these threats, report them now to help protect yourself and others in the community.</p>
+                        <div>
+                            <a href="register.php" class="btn btn-outline-primary btn-lg mr-2 mb-2">
+                                <i class="fas fa-user-plus mr-2"></i>Register to Report
+                            </a>
+                            <a href="login.php" class="btn btn-outline-primary btn-lg mb-2">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Login & Report
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Tutorial Section -->
     <section class="py-4 py-md-5" style="background: linear-gradient(135deg, #f8f9fc 0%, #e3f2fd 100%);">
         <div class="container">
@@ -921,7 +1138,7 @@ include('connectMySql.php');
             <div class="row justify-content-center">
                 <div class="col-12 col-xl-10">
                     <div class="card border-0 shadow-lg">
-                        <div class="card-header bg-primary text-white">
+                        <div class="card-header text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
                             <h4 class="mb-0"><i class="fas fa-file-alt mr-2"></i>Cybersecurity Incident Report Form</h4>
                         </div>
                         
@@ -1103,8 +1320,8 @@ include('connectMySql.php');
             <!-- Preparation Tips -->
             <div class="row mt-4 mt-md-5">
                 <div class="col-12">
-                    <div class="card border-primary">
-                        <div class="card-header bg-primary text-white">
+                    <div class="card border-0 shadow">
+                        <div class="card-header text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
                             <h5 class="mb-0"><i class="fas fa-lightbulb mr-2"></i>Preparation Tips</h5>
                         </div>
                         <div class="card-body p-3 p-md-4">
@@ -1207,6 +1424,29 @@ include('connectMySql.php');
         </div>
     </div>
 
+    <!-- Threat Information Modal -->
+    <div class="modal fade" id="threatModal" tabindex="-1" role="dialog" aria-labelledby="threatModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-white" id="threatModalHeader" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                    <h4 class="modal-title" id="threatModalLabel"></h4>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="threatModalBody" style="text-align: left;">
+                    <!-- Content will be dynamically loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="register.php" class="btn btn-primary" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border: none;">
+                        <i class="fas fa-flag mr-2"></i>Report Incident
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-dark text-white py-4">
         <div class="container">
@@ -1232,6 +1472,280 @@ include('connectMySql.php');
             $('#imageModalLabel').text(imageTitle);
             $('#modalDescription').text(imageDescription);
             $('#imageModal').modal('show');
+        }
+        
+        // Function to show threat information modal
+        function showThreatModal(threatType) {
+            const threats = {
+                phishing: {
+                    title: '<i class="fas fa-fish mr-2"></i>Panlilinlang sa Internet (Phishing)',
+                    content: `
+                        <h5 class="text-danger mb-3">Ano ang Phishing?</h5>
+                        <p>Ang <strong>phishing</strong> ay isang uri ng panloloko sa internet kung saan ang mga kriminal ay nagpapanggap na kilalang kumpanya o tao upang nakawin ang inyong mga personal na impormasyon tulad ng password, credit card number, o bank account details.</p>
+                        
+                        <div class="alert alert-info mt-3 mb-3">
+                            <h6 class="font-weight-bold mb-2"><i class="fas fa-info-circle mr-2"></i>Pagkakaiba ng "Phishing" at "Fishing"</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <p class="mb-1"><strong><i class="fas fa-fish mr-2"></i>Fishing (Pangingisda)</strong></p>
+                                    <p class="small mb-0">Ito ang aktwal na pangingisda - ang paghuli ng isda gamit ang pamingwit o lambat sa dagat, ilog, o lawa. Isang lehitimong aktibidad para sa pagkain at kabuhayan.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong><i class="fas fa-exclamation-triangle text-danger mr-2"></i>Phishing (Cyber Attack)</strong></p>
+                                    <p class="small mb-0">Ito ang <strong>panloloko sa internet</strong> na ginagamit ang "pain" (bait/pakinabang) tulad ng pekeng email para "hulihin" ang mga biktima at nakawin ang kanilang impormasyon. Isang <strong>kriminal na gawain</strong>.</p>
+                                </div>
+                            </div>
+                            <hr class="my-2">
+                            <p class="small mb-0"><i class="fas fa-lightbulb text-warning mr-2"></i><strong>Bakit "Phishing"?</strong> Ang salitang ito ay nanggaling sa "fishing" dahil parang pangingisda rin - gumagamit ang mga scammer ng "pain" (bait) upang "hulihin" ang mga biktima at nakawin ang kanilang personal na impormasyon!</p>
+                        </div>
+                        
+                        <h5 class="text-danger mt-4 mb-3">Paano Nangyayari ang Phishing?</h5>
+                        <div class="alert alert-light border-left border-danger" style="border-left-width: 4px !important;">
+                            <p><strong>1. Pekeng Email o Mensahe</strong><br>
+                            Makakatanggap kayo ng email o text message na mukhang galing sa bangko, online shopping site, o gobyerno. Sasabihin nila na may problema sa inyong account at kailangan ninyong mag-log in kaagad.</p>
+                            
+                            <p><strong>2. Pekeng Website</strong><br>
+                            Kapag nag-click kayo sa link sa email, dadalhin kayo sa pekeng website na halos kamukha ng tunay. Kapag nag-type kayo ng username at password dito, makukuha nila ito.</p>
+                            
+                            <p><strong>3. Pagnanakaw ng Impormasyon</strong><br>
+                            Gagamitin nila ang inyong username at password para pasukin ang inyong tunay na account at nakawin ang inyong pera o personal na datos.</p>
+                        </div>
+                        
+                        <h5 class="text-danger mt-4 mb-3">Mga Halimbawa ng Phishing:</h5>
+                        <ul>
+                            <li><i class="fas fa-envelope text-danger mr-2"></i>Email mula sa "bangko" na nagsasabing i-verify ang account</li>
+                            <li><i class="fas fa-shopping-cart text-danger mr-2"></i>Mensahe tungkol sa nanalo sa raffle na hindi naman kayo sumali</li>
+                            <li><i class="fas fa-exclamation-triangle text-danger mr-2"></i>Text message na nagsasabing suspended ang SIM card</li>
+                            <li><i class="fas fa-gift text-danger mr-2"></i>Fake na ayuda o tulong mula sa gobyerno</li>
+                        </ul>
+                        
+                        <h5 class="text-danger mt-4 mb-3">Paano Maiwasan ang Phishing?</h5>
+                        <div class="alert alert-success">
+                            <p class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i><strong>Huwag basta-basta mag-click</strong> ng mga link sa email o text message</p>
+                            <p class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i><strong>Tingnan mabuti ang email address</strong> ng nagpadala - baka peke</p>
+                            <p class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i><strong>I-type mismo</strong> ang website address sa browser kaysa mag-click ng link</p>
+                            <p class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i><strong>Huwag magbigay</strong> ng password, OTP, o personal na impormasyon</p>
+                            <p class="mb-0"><i class="fas fa-check-circle text-success mr-2"></i><strong>Tawagan ang kumpanya</strong> kung hindi kayo sigurado kung totoo ang mensahe</p>
+                        </div>
+                        
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle mr-2"></i><strong>Tandaan:</strong> Ang mga lehitimong kumpanya ay hindi humihingi ng password o OTP sa pamamagitan ng email o text message!
+                        </div>
+                    `
+                },
+                identity: {
+                    title: '<i class="fas fa-user-secret mr-2"></i>Pagnanakaw ng Pagkakakilanlan (Identity Theft)',
+                    content: `
+                        <h5 class="text-info mb-3">Ano ang Identity Theft?</h5>
+                        <p>Ang <strong>identity theft</strong> o pagnanakaw ng pagkakakilanlan ay nangyayari kapag may taong gumamit ng inyong personal na impormasyon (pangalan, birthday, ID number, o mga dokumento) nang walang pahintulot para sa kanilang sariling kapakinabangan.</p>
+                        
+                        <h5 class="text-info mt-4 mb-3">Paano Nangyayari?</h5>
+                        <div class="alert alert-light border-left border-info" style="border-left-width: 4px !important;">
+                            <p><strong>1. Pagnanakaw ng Dokumento</strong><br>
+                            Kinukuha nila ang inyong ID, birth certificate, o iba pang mahalagang papel. Puwede rin nilang kunin ang larawan ng inyong ID na naka-post sa social media.</p>
+                            
+                            <p><strong>2. Pag-hack ng Account</strong><br>
+                            Pinasok nila ang inyong email, social media, o online account para makuha ang personal na impormasyon.</p>
+                            
+                            <p><strong>3. Paggamit sa Pangalan Ninyo</strong><br>
+                            Gagawa sila ng pekeng account, mag-apply ng loan, o gumawa ng krimen gamit ang inyong identity.</p>
+                        </div>
+                        
+                        <h5 class="text-info mt-4 mb-3">Mga Palatandaan na Biktima Kayo:</h5>
+                        <ul>
+                            <li><i class="fas fa-credit-card text-info mr-2"></i>May nakikitang transaksyon na hindi ninyo ginawa</li>
+                            <li><i class="fas fa-file-invoice text-info mr-2"></i>Tumatanggap ng bill o singil na hindi ninyo alam</li>
+                            <li><i class="fas fa-user-times text-info mr-2"></i>Hindi makapag-log in sa sariling account</li>
+                            <li><i class="fas fa-phone text-info mr-2"></i>May tumatawag tungkol sa utang na hindi ninyo naman ginawa</li>
+                            <li><i class="fas fa-users text-info mr-2"></i>May pekeng account na gumagamit ng inyong pangalan at larawan</li>
+                        </ul>
+                        
+                        <h5 class="text-info mt-4 mb-3">Paano Maprotektahan ang Sarili?</h5>
+                        <div class="alert alert-success">
+                            <p class="mb-2"><i class="fas fa-lock text-success mr-2"></i><strong>Ingatan ang mga ID at dokumento</strong> - huwag basta ipakita o ipahiram</p>
+                            <p class="mb-2"><i class="fas fa-shield-alt text-success mr-2"></i><strong>Huwag mag-post</strong> ng litrato ng ID sa social media</p>
+                            <p class="mb-2"><i class="fas fa-key text-success mr-2"></i><strong>Gumamit ng malakas na password</strong> at huwag ibahagi kahit kanino</p>
+                            <p class="mb-2"><i class="fas fa-user-lock text-success mr-2"></i><strong>I-private ang social media</strong> at mag-ingat sa mga shineshare</p>
+                            <p class="mb-0"><i class="fas fa-eye text-success mr-2"></i><strong>Regular na suriin</strong> ang bank account at credit card statement</p>
+                        </div>
+                        
+                        <div class="alert alert-danger mt-3">
+                            <i class="fas fa-exclamation-circle mr-2"></i><strong>Kapag Nakuha ang Identity</strong> Agad iulat sa bangko, PNP Anti-Cybercrime Group, at sa mga kumpanyang apektado!
+                        </div>
+                    `
+                },
+                onlinefraud: {
+                    title: '<i class="fas fa-money-bill-wave mr-2"></i>Pandaraya sa Internet (Online Fraud)',
+                    content: `
+                        <h5 class="text-success mb-3">Ano ang Online Fraud?</h5>
+                        <p>Ang <strong>online fraud</strong> o pandaraya sa internet ay mga panloloko na naglalayong nakawin ang inyong pera sa pamamagitan ng credit card, debit card, online banking, investment scam, at iba pang mapanlinlang na pamamaraan sa internet.</p>
+                        
+                        <h5 class="text-success mt-4 mb-3">Mga Uri ng Online Fraud:</h5>
+                        <div class="alert alert-light border-left border-success" style="border-left-width: 4px !important;">
+                            <p><strong>1. Credit Card at Banking Fraud</strong><br>
+                            Ginagamit ng iba ang inyong credit card number o online banking details para mag-shopping online o nakawin ang pera sa account nang hindi kayo nakakaalam.</p>
+                            
+                            <p><strong>2. Investment Scam</strong><br>
+                            Nag-aalok ng "mataas na kita" o "siguradong yaman" na pang-uto lang. Kapag nagbigay kayo ng pera, mawawala na sila.</p>
+                            
+                            <p><strong>3. Pekeng Loan Offer</strong><br>
+                            Nag-aalok ng mabilis na loan, pero kakailanganin munang magbayad ng "processing fee" o "insurance". Pagkatapos, wala na ang pera at walang loan na matatanggap.</p>
+                            
+                            <p><strong>4. Panloloko sa Online Shopping</strong><br>
+                            Nag-order kayo ng produkto at nagbayad na, pero hindi dumating ang item o peke naman ang natanggap. Puwede ring mawala na lang ang seller pagkatapos ninyong magbayad.</p>
+                            
+                            <p><strong>5. Romance Scam (Panloloko sa Pag-ibig)</strong><br>
+                            May makikilala kayong online na sobrang sweet at mabait. Pagkatapos ng ilang araw o linggo, hihiram ng pera para sa emergency. Pagkatapos ninyo magpadala, mawawala na sila.</p>
+                            
+                            <p><strong>6. Job Offer Scam (Pekeng Trabaho)</strong><br>
+                            Nag-offer ng "home-based" o "easy money" na trabaho. Kakailanganin munang magbayad ng registration fee o training fee, pero walang trabahong matanggap.</p>
+                            
+                            <p><strong>7. Pyramiding o "Easy Money" Scheme</strong><br>
+                            Mag-invest raw ng pera at kikita ng malaki. Kailangan magrecruitng bagong members. Sa huli, yung nasa taas lang ang kikita, yung nasa baba ay talo.</p>
+                        </div>
+                        
+                        <h5 class="text-success mt-4 mb-3">Paano Ginagawa ng Mga Scammer?</h5>
+                        <ul>
+                            <li><i class="fas fa-mobile-alt text-success mr-2"></i>Humihingi ng OTP (One-Time PIN) na dapat sekreto - kayo lang nakakaalam</li>
+                            <li><i class="fas fa-link text-success mr-2"></i>Nagpapadala ng link na may virus para makuha ang bank details</li>
+                            <li><i class="fas fa-phone-alt text-success mr-2"></i>Tumatawag at nagpapanggap na taga-bangko para hingin ang card details</li>
+                            <li><i class="fas fa-qrcode text-success mr-2"></i>Pekeng QR code para sa payment na pupunta sa kanila ang pera</li>
+                            <li><i class="fas fa-clock text-success mr-2"></i>"Limited time offer" - pinapapressure kayong magmadali</li>
+                            <li><i class="fas fa-gift text-success mr-2"></i>Fake na raffle o premyo na kailangan muna magbayad ng "tax"</li>
+                        </ul>
+                        
+                        <h5 class="text-success mt-4 mb-3">Mga Palatandaan ng Scam:</h5>
+                        <ul>
+                            <li><i class="fas fa-money-bill-wave text-warning mr-2"></i><strong>"Mataas na kita, walang effort"</strong> - masyadong maganda para maging totoo</li>
+                            <li><i class="fas fa-hand-holding-usd text-warning mr-2"></i><strong>Humihingi ng pera una</strong> bago makakuha ng serbisyo</li>
+                            <li><i class="fas fa-user-secret text-warning mr-2"></i><strong>Walang physical address</strong> o contact details ng negosyo</li>
+                            <li><i class="fas fa-star text-warning mr-2"></i><strong>Puro positive reviews</strong> na mukhang peke o manufactured</li>
+                        </ul>
+                        
+                        <h5 class="text-success mt-4 mb-3">Paano Maprotektahan ang Sarili?</h5>
+                        <div class="alert alert-warning">
+                            <p class="mb-2"><i class="fas fa-ban text-warning mr-2"></i><strong>Huwag KAILANMAN ibigay</strong> ang OTP, CVV, o PIN sa kahit sino</p>
+                            <p class="mb-2"><i class="fas fa-search text-warning mr-2"></i><strong>Mag-research muna</strong> - i-Google ang pangalan ng seller o kumpanya</p>
+                            <p class="mb-2"><i class="fas fa-shield-alt text-warning mr-2"></i><strong>Gumamit ng secure payment method</strong> na may buyer protection</p>
+                            <p class="mb-2"><i class="fas fa-handshake text-warning mr-2"></i><strong>Meet-up o COD</strong> kung puwede para makita muna ang item</p>
+                            <p class="mb-2"><i class="fas fa-mobile text-warning mr-2"></i><strong>I-activate ang SMS/email notification</strong> para aware kayo sa transactions</p>
+                            <p class="mb-2"><i class="fas fa-brain text-warning mr-2"></i><strong>Kung masyadong maganda ang alok</strong>, baka scam yan</p>
+                            <p class="mb-0"><i class="fas fa-laptop text-warning mr-2"></i><strong>Gumamit ng secure WiFi</strong> kapag mag-online banking - iwasan ang public WiFi</p>
+                        </div>
+                        
+                        <div class="alert alert-danger mt-3">
+                            <i class="fas fa-bell mr-2"></i><strong>Naloko Na o Nawalan ng Pera?</strong> Agad tumawag sa bangko para i-block ang card at account. I-save ang lahat ng ebidensya (screenshot, receipts, conversation) at ireport sa PNP Anti-Cybercrime Group!
+                        </div>
+                    `
+                },
+                hacking: {
+                    title: '<i class="fas fa-user-lock mr-2"></i>Pagpasok Nang Walang Pahintulot (Hacking)',
+                    content: `
+                        <h5 class="mb-3" style="color: #6f42c1;">Ano ang Hacking?</h5>
+                        <p>Ang <strong>hacking</strong> ay ang iligal na pagpasok sa inyong computer, cellphone, account, o network nang walang pahintulot. Ginagawa ito upang nakawin ang impormasyon, pera, o para sirain ang inyong device.</p>
+                        
+                        <h5 class="mt-4 mb-3" style="color: #6f42c1;">Paano Nangyayari ang Hacking?</h5>
+                        <div class="alert alert-light" style="border-left: 4px solid #6f42c1;">
+                            <p><strong>1. Mahina ang Password</strong><br>
+                            Kung simple lang ang password (tulad ng "123456" o birthday), madali itong hulaan ng hacker.</p>
+                            
+                            <p><strong>2. Virus o Malware</strong><br>
+                            Pag nag-download kayo ng suspicious na file o app, puwede itong mag-install ng virus na magbibigay ng access sa hacker.</p>
+                            
+                            <p><strong>3. Public WiFi</strong><br>
+                            Ang mga hacker ay puwedeng makita ang inyong online activity kapag gumamit kayo ng public WiFi sa mall o kape.</p>
+                            
+                            <p><strong>4. Outdated Software</strong><br>
+                            Ang lumang version ng apps o operating system ay may mga butas sa security na maaaring pasukin.</p>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3" style="color: #6f42c1;">Mga Senyales na Na-hack Kayo:</h5>
+                        <ul>
+                            <li><i class="fas fa-exclamation-triangle mr-2" style="color: #6f42c1;"></i>Biglang kumagal ang computer o cellphone</li>
+                            <li><i class="fas fa-lock-open mr-2" style="color: #6f42c1;"></i>Hindi kayo makapag-log in sa sariling account</li>
+                            <li><i class="fas fa-paper-plane mr-2" style="color: #6f42c1;"></i>May mga message o post na hindi ninyo ginawa</li>
+                            <li><i class="fas fa-envelope mr-2" style="color: #6f42c1;"></i>Nag-iba ang password o email address ng account</li>
+                            <li><i class="fas fa-bell mr-2" style="color: #6f42c1;"></i>Tumatanggap ng notification tungkol sa device na hindi ninyo alam</li>
+                        </ul>
+                        
+                        <h5 class="mt-4 mb-3" style="color: #6f42c1;">Paano Maiwasan ang Hacking?</h5>
+                        <div class="alert alert-success">
+                            <p class="mb-2"><i class="fas fa-key text-success mr-2"></i><strong>Gumamit ng malakas na password</strong> - combination ng letters, numbers, at symbols</p>
+                            <p class="mb-2"><i class="fas fa-mobile-alt text-success mr-2"></i><strong>I-on ang Two-Factor Authentication</strong> (2FA) para dagdag proteksyon</p>
+                            <p class="mb-2"><i class="fas fa-sync text-success mr-2"></i><strong>I-update ang apps at operating system</strong> regularly</p>
+                            <p class="mb-2"><i class="fas fa-shield-virus text-success mr-2"></i><strong>Mag-install ng anti-virus</strong> sa computer at cellphone</p>
+                            <p class="mb-2"><i class="fas fa-wifi text-success mr-2"></i><strong>Iwasan ang public WiFi</strong> kapag mag-log in sa sensitive accounts</p>
+                            <p class="mb-0"><i class="fas fa-download text-success mr-2"></i><strong>Mag-ingat sa pag-download</strong> - galing lang sa trusted sources</p>
+                        </div>
+                        
+                        <div class="alert alert-danger mt-3">
+                            <i class="fas fa-first-aid mr-2"></i><strong>Kapag Na-hack Na:</strong> Agad palitan ang lahat ng password, i-log out sa lahat ng device, at ireport sa PNP Anti-Cybercrime Group!
+                        </div>
+                    `
+                },
+                cyberbullying: {
+                    title: '<i class="fas fa-bullhorn mr-2"></i>Pang-aabuso sa Internet (Cyberbullying)',
+                    content: `
+                        <h5 class="mb-3" style="color: #e83e8c;">Ano ang Cyberbullying?</h5>
+                        <p>Ang <strong>cyberbullying</strong> o pang-aabuso sa internet ay ang pag-api, pananakot, pagpapahiya, o pag-insulto sa isang tao gamit ang internet o social media. Ito ay isang krimen at may parusa sa batas.</p>
+                        
+                        <h5 class="mt-4 mb-3" style="color: #e83e8c;">Mga Halimbawa ng Cyberbullying:</h5>
+                        <div class="alert alert-light" style="border-left: 4px solid #e83e8c;">
+                            <p><strong>1. Pagbabanta Online</strong><br>
+                            Pagpapadala ng mga mensahe na nakakatakot o nangbabanta ng pisikal na karahasan.</p>
+                            
+                            <p><strong>2. Pag-uusig sa Internet (Cyberstalking)</strong><br>
+                            Sunod-sunod na mensahe, pag-comment, o pag-tag sa tao na ayaw nang makipag-usap.</p>
+                            
+                            <p><strong>3. Pagpapahiya o Pag-insulto</strong><br>
+                            Pag-post ng nakakahiyang litrato, video, o impormasyon para pagpahiyain ang tao.</p>
+                            
+                            <p><strong>4. Pag-spread ng Kasinungalingan</strong><br>
+                            Paggawa ng fake news o tsismis tungkol sa isang tao para sirain ang reputasyon.</p>
+                            
+                            <p><strong>5. Pag-hack at Paggamit ng Account</strong><br>
+                            Pagpasok sa account ng iba para mag-post ng nakakahiyang bagay.</p>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3" style="color: #e83e8c;">Epekto ng Cyberbullying:</h5>
+                        <ul>
+                            <li><i class="fas fa-sad-tear mr-2" style="color: #e83e8c;"></i>Pagkadepres, pagkabalisa, at pangamba</li>
+                            <li><i class="fas fa-heart-broken mr-2" style="color: #e83e8c;"></i>Pagkawala ng tiwala sa sarili</li>
+                            <li><i class="fas fa-user-times mr-2" style="color: #e83e8c;"></i>Pag-iwas sa social media at mga kaibigan</li>
+                            <li><i class="fas fa-head-side-virus mr-2" style="color: #e83e8c;"></i>Stress at problema sa mental health</li>
+                            <li><i class="fas fa-exclamation-circle mr-2" style="color: #e83e8c;"></i>Sa malubhang kaso, puwedeng mauwi sa self-harm</li>
+                        </ul>
+                        
+                        <h5 class="mt-4 mb-3" style="color: #e83e8c;">Ano ang Gagawin Kung Biktima Kayo?</h5>
+                        <div class="alert alert-warning">
+                            <p class="mb-2"><i class="fas fa-save text-warning mr-2"></i><strong>I-save ang ebidensya</strong> - screenshot ng mga mensahe, comment, at post</p>
+                            <p class="mb-2"><i class="fas fa-ban text-warning mr-2"></i><strong>I-block ang tao</strong> na nang-aapi sa inyo</p>
+                            <p class="mb-2"><i class="fas fa-flag text-warning mr-2"></i><strong>I-report</strong> sa social media platform at PNP</p>
+                            <p class="mb-2"><i class="fas fa-comments text-warning mr-2"></i><strong>Magsabi sa mga magulang</strong>, guro, o taong pinagkakatiwalaan</p>
+                            <p class="mb-0"><i class="fas fa-reply text-warning mr-2"></i><strong>Huwag sumagot</strong> o makipag-away pa - mas lalala lang</p>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3" style="color: #e83e8c;">Paano Maiwasan ang Cyberbullying?</h5>
+                        <div class="alert alert-success">
+                            <p class="mb-2"><i class="fas fa-lock text-success mr-2"></i><strong>I-private ang social media</strong> accounts</p>
+                            <p class="mb-2"><i class="fas fa-user-slash text-success mr-2"></i><strong>Huwag magpost</strong> ng masyadong personal na impormasyon</p>
+                            <p class="mb-2"><i class="fas fa-users-slash text-success mr-2"></i><strong>Mag-ingat sa pag-accept</strong> ng friend request mula sa hindi kilala</p>
+                            <p class="mb-0"><i class="fas fa-thumbs-up text-success mr-2"></i><strong>Maging mabuti online</strong> - huwag maging bully sa iba</p>
+                        </div>
+                        
+                        <div class="alert alert-danger mt-3">
+                            <i class="fas fa-gavel mr-2"></i><strong>Alalahanin:</strong> Ang cyberbullying ay may parusa sa Anti-Cybercrime Law. Puwedeng makasuhan at makulong ang gumawa nito!
+                        </div>
+                    `
+                }
+            };
+            
+            const threat = threats[threatType];
+            if (threat) {
+                $('#threatModalLabel').html(threat.title);
+                $('#threatModalBody').html(threat.content);
+                $('#threatModal').modal('show');
+            }
         }
         
         $(document).ready(function() {

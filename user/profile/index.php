@@ -36,7 +36,19 @@ if(isset($_POST['submit']))
 
 $query = "SELECT * FROM users WHERE user_id = '".$session_user_id."'";
 $result = $conn->query($query);
-while ($row = $result->fetch_assoc()) {
+
+// Avoid blank page: fetch a single row safely, even if none found
+$row = null;
+if ($result && $result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+} else {
+    // Provide sensible defaults so the page still renders
+    $row = [
+        'name' => 'User',
+        'email' => '',
+        'password' => ''
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -541,7 +553,6 @@ while ($row = $result->fetch_assoc()) {
 
 </html>
 <?php
-}
 }
 else
 {

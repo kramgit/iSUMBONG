@@ -33,7 +33,16 @@ define('FROM_NAME', 'iSUMBONG System');
 define('REPLY_TO_EMAIL', env('SMTP_USERNAME'));
 
 // Verification Settings - Uses environment variable for flexibility
-$app_url = env('APP_URL', 'http://localhost/iSUMBONG');
+// If APP_URL is not set, try to auto-detect the current host and base path (works with Dev Tunnels, ngrok, etc.)
+$app_url = env('APP_URL');
+if (empty($app_url)) {
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    // Base path of the running script (e.g., /iSUMBONG)
+    $basePath = isset($_SERVER['SCRIPT_NAME']) ? rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/') : '/iSUMBONG';
+    if ($basePath === '') { $basePath = '/'; }
+    $app_url = rtrim($scheme . '://' . $host . $basePath, '/');
+}
 define('VERIFICATION_BASE_URL', $app_url . '/verify.php');
 
 /*
