@@ -27,6 +27,9 @@ switch ($action) {
     case 'severity':
         getSeverityDistribution($conn);
         break;
+    case 'user_registrations':
+        getMonthlyUserRegistrations($conn);
+        break;
     default:
         http_response_code(400);
         echo json_encode(['error' => 'Invalid action']);
@@ -39,10 +42,11 @@ function getMonthlyIncidentData($conn) {
     // Initialize array with all months
     $monthlyData = array_fill(1, 12, 0);
     
-    $query = "SELECT MONTH(created_at) as month, COUNT(*) as count 
+    // Use 'date' field (Date Reported by user) instead of 'created_at'
+    $query = "SELECT MONTH(date) as month, COUNT(*) as count 
               FROM incident 
-              WHERE YEAR(created_at) = ? 
-              GROUP BY MONTH(created_at)";
+              WHERE YEAR(date) = ? 
+              GROUP BY MONTH(date)";
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $currentYear);
@@ -186,6 +190,35 @@ function getSeverityDistribution($conn) {
         'labels' => $labels,
         'data' => $data,
         'colors' => $colors
+    ];
+    
+    echo json_encode($response);
+}
+
+function getMonthlyUserRegistrations($conn) {
+    $currentYear = date('Y');
+    
+    // Initialize array with all months
+    $monthlyData = array_fill(1, 12, 0);
+    
+    $query = "SELECT MONTH(created_at) as month, COUNT(*) as count 
+              FROM users 
+              WHERE role = 'user' AND YEAR(created_at) = ? 
+              GROUP BY MONTH(created_at)";
+    
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $currentYear);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    while ($row = $result->fetch_assoc()) {
+        $monthlyData[(int)$row['month']] = (int)$row['count'];
+    }
+    
+    $response = [
+        'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        'data' => array_values($monthlyData),
+        'year' => $currentYear
     ];
     
     echo json_encode($response);

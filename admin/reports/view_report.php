@@ -66,7 +66,7 @@ if (isset($_POST['btn_save'])) {
         $mail->addReplyTo(env('SMTP_USERNAME'), 'iSUMBONG System');
         $mail->addAddress( $row['email'] , 'Receiver Name');
         $mail->isHTML(true);
-        $mail->Subject = 'Update Incident Report';
+        $mail->Subject = 'Update on Your Report';
         $mail->Body = '
         <!DOCTYPE html>
         <html>
@@ -77,55 +77,92 @@ if (isset($_POST['btn_save'])) {
             background-color: #f4f6f8;
             margin: 0;
             padding: 0;
+            line-height: 1.6;
             }
             .container {
             background-color: #ffffff;
             max-width: 600px;
             margin: 30px auto;
-            padding: 20px 30px;
+            padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             color: #333;
             }
             .header {
-            text-align: center;
+            border-bottom: 3px solid #1a73e8;
             padding-bottom: 20px;
+            margin-bottom: 20px;
             }
             .header h2 {
             margin: 0;
-            color: #f57c00;
+            color: #1a73e8;
+            font-size: 24px;
+            }
+            .content {
+            font-size: 15px;
             }
             .content p {
-            margin: 12px 0;
-            font-size: 15px;
+            margin: 15px 0;
+            }
+            .details-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #1a73e8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            }
+            .details-box p {
+            margin: 8px 0;
             }
             .label {
             font-weight: bold;
-            color: #555;
+            color: #333;
             }
             .footer {
             margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
             font-size: 13px;
-            text-align: center;
-            color: #888;
+            color: #666;
+            }
+            .signature {
+            margin-top: 20px;
+            font-weight: 500;
             }
         </style>
         </head>
         <body>
         <div class="container">
             <div class="header">
-            <h2>⚠️ Incident Report Update</h2>
+            <h2>Update on Your Report</h2>
             </div>
             <div class="content">
-            <p><span class="label">Status:</span> '.$status.'</p>
-            <p><span class="label">Title:</span> '.$title.'</p>
-            <p><span class="label">Category:</span> '.$category.'</p>
-            <p><span class="label">Date:</span> '.$date.'</p>
-            <p><span class="label">Description:</span><br>'.$description.'</p>
-            <p><span class="label">Reported By:</span> '.$_SESSION['name'].'</p>
+            <p>Dear '.$row['name'].',</p>
+            
+            <p>Good day.</p>
+            
+            <p>This email is to inform you that your cybersecurity incident report submitted through the iSumbong system has been successfully reviewed by the Siniloan Municipal Police Station.</p>
+            
+            <p>Based on the initial assessment and system analysis, your report has been classified with the following details:</p>
+            
+            <div class="details-box">
+                <p><span class="label">Incident Category:</span> '.$category.'</p>
+                <p><span class="label">Severity Level:</span> '.$incident_data['severity_level'].'</p>
+                <p><span class="label">Current Status:</span> '.$status.'</p>
+            </div>
+            
+            <p>You will receive further updates regarding the progress of your report through email notifications and the iSumbong platform. If additional information is required, you may be contacted by the investigating officer.</p>
+            
+            <p>Thank you for helping promote cybersecurity awareness and community safety in Siniloan, Laguna.</p>
+            
+            <div class="signature">
+                <p>Sincerely,</p>
+                <p>iSumbong System<br>
+                Siniloan Municipal Police Station</p>
+            </div>
             </div>
             <div class="footer">
-            This is an automated message regarding the incident status update.
+            <p>This is an automated message from the iSumbong system. Please do not reply to this email.</p>
             </div>
         </div>
         </body>
@@ -530,7 +567,7 @@ $suggestion = $row['suggestion'];
                     <!-- Control Buttons -->
                     <div class="control-buttons no-print">
                         <a href="index.php" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Reports
+                        <i class="fas fa-arrow-left me-2"></i>Back to Reports
                         </a>
                         <button onclick="window.print()" class="btn btn-primary">
                             <i class="fas fa-print me-2"></i>Print Report
@@ -574,11 +611,6 @@ $suggestion = $row['suggestion'];
                         <div class="field-row">
                             <div class="field-label">Date Reported:</div>
                             <div class="field-value"><?= date('F j, Y \a\t g:i A', strtotime($incident_data['date'])) ?></div>
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Date Created:</div>
-                            <div class="field-value"><?= date('F j, Y \a\t g:i A', strtotime($incident_data['created_at'])) ?></div>
                         </div>
                         
                         <div class="field-row">
@@ -652,51 +684,6 @@ $suggestion = $row['suggestion'];
                             <?= nl2br(htmlspecialchars($incident_data['description'])) ?>
                         </div>
 
-                        <!-- Evidence Section -->
-                        <div class="section-header">
-                            <i class="fas fa-file-alt me-2"></i>Evidence Collected
-                        </div>
-                        
-                        <div class="evidence-grid">
-                            <div class="evidence-item">
-                                <i class="fas fa-file-text <?= $incident_data['evidence_logs'] ? 'evidence-yes' : 'evidence-no' ?>"></i>
-                                <div><strong>System Logs</strong></div>
-                                <div><?= $incident_data['evidence_logs'] ? 'Collected' : 'Not Collected' ?></div>
-                                <?php if ($incident_data['evidence_logs']): ?>
-                                <button class="btn btn-sm btn-primary no-print mt-2" onclick="viewEvidenceDetails('logs')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <?php endif; ?>
-                            </div>
-                            <div class="evidence-item">
-                                <i class="fas fa-image <?= $incident_data['evidence_screenshots'] ? 'evidence-yes' : 'evidence-no' ?>"></i>
-                                <div><strong>Screenshots</strong></div>
-                                <div><?= $incident_data['evidence_screenshots'] ? 'Collected' : 'Not Collected' ?></div>
-                                <?php if ($incident_data['evidence_screenshots']): ?>
-                                <?php endif; ?>
-                            </div>
-                            <div class="evidence-item">
-                                <i class="fas fa-envelope <?= $incident_data['evidence_email'] ? 'evidence-yes' : 'evidence-no' ?>"></i>
-                                <div><strong>Email Evidence</strong></div>
-                                <div><?= $incident_data['evidence_email'] ? 'Collected' : 'Not Collected' ?></div>
-                                <?php if ($incident_data['evidence_email']): ?>
-                                <button class="btn btn-sm btn-primary no-print mt-2" onclick="viewEvidenceDetails('email')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <?php endif; ?>
-                            </div>
-                            <div class="evidence-item">
-                                <i class="fas fa-folder <?= $incident_data['evidence_other'] ? 'evidence-yes' : 'evidence-no' ?>"></i>
-                                <div><strong>Other Evidence</strong></div>
-                                <div><?= $incident_data['evidence_other'] ? 'Collected' : 'Not Collected' ?></div>
-                                <?php if ($incident_data['evidence_other']): ?>
-                                <button class="btn btn-sm btn-primary no-print mt-2" onclick="viewEvidenceDetails('other')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
                         <!-- File Attachments -->
                         <?php
                         $query = "SELECT * FROM attachment WHERE incident_id = '".$id."'";
@@ -756,16 +743,16 @@ $suggestion = $row['suggestion'];
                         <div style="background: white; padding: 30px; margin-top: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
                             
                             <!-- Comments Section -->
-                            <h5><i class="fas fa-comments me-2"></i>Administrative Comments</h5>
+                            <h5><i class="fas fa-comment-dots me-2"></i>Chat User</h5>
                             
                             <!-- Comment Form -->
                             <form method="post" class="mb-4">
                                 <div class="mb-3">
-                                    <label for="commentInput" class="form-label">Add Comment:</label>
-                                    <textarea class="form-control" name="comment" id="commentInput" rows="3" placeholder="Enter your administrative comment here..."></textarea>
+                                    <label for="commentInput" class="form-label">Send a message to User:</label>
+                                    <textarea class="form-control" name="comment" id="commentInput" rows="3" placeholder="Type your message here..."></textarea>
                                 </div>
                                 <button type="submit" name="btn_comment" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>Post Comment
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
                                 </button>
                             </form>
                             

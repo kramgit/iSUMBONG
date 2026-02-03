@@ -2,6 +2,35 @@
 include '../../connectMySql.php';
 include '../../loginverification.php';
 
+// Handle bulk actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['bulk_action']) && isset($_POST['selected_items'])) {
+        $action = $_POST['bulk_action'];
+        $selected_ids = $_POST['selected_items'];
+        
+        if ($action === 'delete_forever') {
+            foreach ($selected_ids as $id) {
+                $stmt = $conn->prepare("DELETE FROM spam WHERE id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+            }
+            $success_msg = count($selected_ids) . " spam report(s) deleted permanently.";
+        } elseif ($action === 'not_spam') {
+            foreach ($selected_ids as $id) {
+                // Move from spam to incident table
+                $stmt = $conn->prepare("INSERT INTO incident SELECT * FROM spam WHERE id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                
+                // Delete from spam
+                $stmt = $conn->prepare("DELETE FROM spam WHERE id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+            }
+            $success_msg = count($selected_ids) . " report(s) moved to Incidents.";
+        }
+    }
+}
 
 if (logged_in()) {
 ?>
@@ -31,43 +60,269 @@ if (logged_in()) {
         <!-- Custom styles for this template-->
         <script src="../../js/html2canvas.min.js"></script>
         <link href="../../css/sb-admin-2.min.css" rel="stylesheet">
+        <link href="../../js/sweetalert2.min.css" rel="stylesheet">
+        <script src="../../js/sweetalert2.min.js"></script>
 
         <style>
-            /* Custom styles for fixed sidebar */
-            #wrapper {
-                height: 100vh;
+            /* Gmail-style Spam Inbox */
+            body {
+                font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+                background-color: #f5f5f5;
+            }
+
+            .gmail-container {
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.12);
                 overflow: hidden;
             }
 
-            .sidebar {
-                position: fixed !important;
-                top: 0;
-                left: 0;
-                height: 100vh !important;
-                overflow-y: auto;
-                z-index: 1000;
+            /* Toolbar */
+            .gmail-toolbar {
+                display: flex;
+                align-items: center;
+                padding: 12px 16px;
+                border-bottom: 1px solid #e0e0e0;
+                background: #fff;
+                gap: 12px;
             }
 
-            #content-wrapper {
-                margin-left: 14rem;
-                height: 100vh;
-                overflow-y: auto;
-                overflow-x: hidden;
+            .gmail-toolbar .checkbox-all {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
             }
 
-            /* Responsive adjustments */
+            .gmail-toolbar select {
+                border: 1px solid #dadce0;
+                border-radius: 4px;
+                padding: 6px 32px 6px 12px;
+                font-size: 14px;
+                color: #5f6368;
+                background: white;
+                cursor: pointer;
+                outline: none;
+            }
+
+            .gmail-toolbar select:hover {
+                background: #f8f9fa;
+                border-color: #c6c6c6;
+            }
+
+            .gmail-toolbar .btn-action {
+                border: none;
+                background: white;
+                color: #5f6368;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-size: 14px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.2s;
+            }
+
+            .gmail-toolbar .btn-action:hover {
+                background: #f8f9fa;
+            }
+
+            .gmail-toolbar .btn-action:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            .search-box {
+                flex: 1;
+                max-width: 500px;
+            }
+
+            .search-box input {
+                width: 100%;
+                padding: 10px 16px;
+                border: 1px solid #dadce0;
+                border-radius: 24px;
+                font-size: 14px;
+                background: #f1f3f4;
+            }
+
+            .search-box input:focus {
+                background: white;
+                outline: none;
+                border-color: #1a73e8;
+                box-shadow: 0 1px 6px rgba(26, 115, 232, 0.3);
+            }
+
+            /* Email List */
+            .gmail-list {
+                background: white;
+            }
+
+            .gmail-item {
+                display: flex;
+                align-items: center;
+                padding: 12px 16px;
+                border-bottom: 1px solid #f0f0f0;
+                cursor: pointer;
+                transition: all 0.1s;
+                gap: 16px;
+            }
+
+            .gmail-item:hover {
+                box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+                z-index: 1;
+            }
+
+            .gmail-item.unread {
+                background: #f8f9fa;
+                font-weight: 600;
+            }
+
+            .gmail-item input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+
+            .gmail-star {
+                color: #dadce0;
+                font-size: 18px;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+
+            .gmail-star:hover {
+                color: #f4b400;
+            }
+
+            .gmail-star.starred {
+                color: #f4b400;
+            }
+
+            .gmail-sender {
+                min-width: 200px;
+                font-size: 14px;
+                color: #202124;
+            }
+
+            .gmail-subject {
+                flex: 1;
+                font-size: 14px;
+                color: #202124;
+                display: flex;
+                gap: 8px;
+            }
+
+            .gmail-subject .subject-text {
+                font-weight: 500;
+            }
+
+            .gmail-subject .preview-text {
+                color: #5f6368;
+                font-weight: 400;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .gmail-attachment {
+                color: #5f6368;
+                font-size: 14px;
+            }
+
+            .gmail-date {
+                min-width: 100px;
+                text-align: right;
+                font-size: 12px;
+                color: #5f6368;
+            }
+
+            .gmail-status {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: 500;
+                text-transform: uppercase;
+            }
+
+            .status-pending {
+                background: #fef7e0;
+                color: #f9ab00;
+            }
+
+            .status-investigating {
+                background: #e8f0fe;
+                color: #1967d2;
+            }
+
+            .status-resolved {
+                background: #e6f4ea;
+                color: #137333;
+            }
+
+            /* Warning Banner */
+            .spam-warning {
+                background: #fff3cd;
+                border-left: 4px solid #ffc107;
+                padding: 12px 16px;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .spam-warning i {
+                color: #f57c00;
+                font-size: 20px;
+            }
+
+            .spam-warning-text {
+                flex: 1;
+                font-size: 14px;
+                color: #5f6368;
+            }
+
+            /* Selection info */
+            .selection-info {
+                padding: 8px 16px;
+                background: #e8f0fe;
+                border-bottom: 1px solid #d2e3fc;
+                font-size: 13px;
+                color: #1967d2;
+                display: none;
+            }
+
+            .selection-info.active {
+                display: block;
+            }
+
+            /* Empty state */
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: #5f6368;
+            }
+
+            .empty-state i {
+                font-size: 48px;
+                color: #dadce0;
+                margin-bottom: 16px;
+            }
+
+            /* Responsive */
             @media (max-width: 768px) {
-                .sidebar {
-                    margin-left: -14rem;
-                    transition: margin-left 0.3s ease;
+                .gmail-sender {
+                    min-width: 120px;
                 }
-
-                .sidebar.toggled {
-                    margin-left: 0;
+                
+                .gmail-date {
+                    min-width: 60px;
+                    font-size: 11px;
                 }
-
-                #content-wrapper {
-                    margin-left: 0;
+                
+                .gmail-subject .preview-text {
+                    display: none;
                 }
             }
         </style>
@@ -92,116 +347,110 @@ if (logged_in()) {
                     <!-- Begin Page Content -->
                     <div class="container-fluid">
 
-                        <!-- Page Heading -->
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800">Spam Reports</h1>
-                            <!--<a href="register.php" class=" btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus"></i> Report New Incident</a>-->
+                        <?php if (isset($success_msg)): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle"></i> <?= $success_msg ?>
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
                         </div>
+                        <?php endif; ?>
 
-                        <!-- Content Row -->
-                        <div class="card shadow-sm mb-4" style="border-radius: 1rem;">
-                            <div class="card-header py-3 bg-white" style="border-top-left-radius: 1rem; border-top-right-radius: 1rem;">
-                                <h6 class="m-0 font-weight-bold text-primary">Spam Reports</h6>
+                        <!-- Gmail-style Spam Inbox -->
+                        <div class="gmail-container">
+                            
+                            <!-- Spam Warning Banner -->
+                            <div class="spam-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div class="spam-warning-text">
+                                    <strong>These messages are in Spam.</strong> Messages that have been in Spam for more than 30 days will be automatically deleted.
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle" id="dataTable" width="100%" cellspacing="0" style="border-radius: 0.75rem; overflow: hidden;">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th class="text-secondary text-uppercase small">Incident Type</th>
-                                                <th class="text-secondary text-uppercase small">Date Reported</th>
-                                                <th class="text-secondary text-uppercase small">Status</th>
-                                                <th class="text-secondary text-uppercase small">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $query = "SELECT * FROM spam ORDER BY date DESC";
-                                            $result = $conn->query($query);
-                                            while ($row = $result->fetch_assoc()) {
-                                                echo "<tr>";
 
-                                                // Set color for badge
-                                                $color = "secondary";
-                                                if ($row['status'] == 'PENDING') {
-                                                    $color = "danger";
-                                                } else if ($row['status'] == 'INVESTIGATING') {
-                                                    $color = "warning";
-                                                } else if ($row['status'] == 'RESOLVED') {
-                                                    $color = "success";
-                                                }
+                            <!-- Selection Info -->
+                            <div class="selection-info" id="selectionInfo">
+                                <span id="selectedCount">0</span> selected
+                            </div>
 
-                                                echo "<td class='text-dark font-weight-bold'>" . htmlspecialchars(strtoupper($row['title'])) . "</td>";
-                                                echo "<td class='text-dark'>" . htmlspecialchars(strtoupper($row['date'])) . "</td>";
-                                                echo "<td><span class='badge badge-pill badge-" . $color . " px-3 py-2'>" . strtoupper($row['status']) . "</span></td>";
-                                                echo "<td>
-                                                <a href='view.php?id=" . $row["id"] . "' class='btn btn-sm btn-outline-primary rounded-pill shadow-sm'>
-                                                   <i class='fas fa-eye'></i> View
-                                                </a>";
+                            <!-- Toolbar -->
+                            <form method="POST" id="bulkActionForm">
+                                <div class="gmail-toolbar">
+                                    <input type="checkbox" class="checkbox-all" id="selectAll" title="Select all">
+                                    
+                                    <select name="bulk_action" id="bulkAction" disabled>
+                                        <option value="">Actions</option>
+                                        <option value="delete_forever">Delete forever</option>
+                                        <option value="not_spam">Not spam</option>
+                                    </select>
 
-                                                // If incident has feedback, show "View Feedback" button
-                                                $check_feedback = $conn->prepare("SELECT rating, improvements, comment 
-                                                                         FROM feedback 
-                                                                        WHERE incident_id = ?");
-                                                $check_feedback->bind_param("i", $row["id"]);
-                                                $check_feedback->execute();
-                                                $result_feedback = $check_feedback->get_result();
+                                    <button type="button" class="btn-action" id="refreshBtn" title="Refresh">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
 
-                                                if ($result_feedback->num_rows > 0) {
-                                                    $feedback = $result_feedback->fetch_assoc();
-                                                    echo " <button class='btn btn-sm btn-outline-info rounded-pill ml-2'
-                                                        data-toggle='modal'
-                                                        data-target='#viewFeedbackModal'
-                                                        onclick='showFeedback(" . json_encode($feedback) . ")'>
-                                                        <i class='fas fa-comment-dots'></i> View Feedback
-                                                    </button>";
-                                                }
+                                    <div class="search-box">
+                                        <input type="text" id="searchInput" placeholder="Search spam reports...">
+                                    </div>
+                                </div>
 
-                                                echo "</td>";
+                                <!-- Email List -->
+                                <div class="gmail-list" id="spamList">
+                                    <?php
+                                    $query = "SELECT s.*, 
+                                              (SELECT COUNT(*) FROM attachment WHERE incident_id = s.id) as attachment_count
+                                              FROM spam s 
+                                              ORDER BY s.date DESC";
+                                    $result = $conn->query($query);
+                                    
+                                    if ($result->num_rows == 0) {
+                                        echo '<div class="empty-state">
+                                                <i class="fas fa-inbox"></i>
+                                                <h5>No spam reports</h5>
+                                                <p>Messages marked as spam will appear here</p>
+                                              </div>';
+                                    } else {
+                                        while ($row = $result->fetch_assoc()) {
+                                            $status_class = '';
+                                            switch ($row['status']) {
+                                                case 'PENDING':
+                                                    $status_class = 'status-pending';
+                                                    break;
+                                                case 'INVESTIGATING':
+                                                    $status_class = 'status-investigating';
+                                                    break;
+                                                case 'RESOLVED':
+                                                    $status_class = 'status-resolved';
+                                                    break;
                                             }
-                                            ?>
-                                        </tbody>
-                                    </table>
+                                            
+                                            $description_preview = substr(strip_tags($row['description'] ?? ''), 0, 100);
+                                            $date_formatted = date('M j', strtotime($row['date']));
+                                            $threat_category = $row['threat_category'] ?? $row['title'] ?? 'Spam Report';
+                                            
+                                            echo '<div class="gmail-item" data-id="'.$row['id'].'" onclick="viewReport('.$row['id'].')">
+                                                    <input type="checkbox" name="selected_items[]" value="'.$row['id'].'" class="item-checkbox" onclick="event.stopPropagation()">
+                                                    <i class="far fa-star gmail-star" onclick="event.stopPropagation(); toggleStar(this)"></i>
+                                                    <div class="gmail-sender">'.htmlspecialchars($row['title'] ?? 'No Title').'</div>
+                                                    <div class="gmail-subject">
+                                                        <span class="subject-text">'.htmlspecialchars($threat_category).'</span>
+                                                        <span class="preview-text">- '.htmlspecialchars($description_preview).'...</span>
+                                                    </div>';
+                                            
+                                            if ($row['attachment_count'] > 0) {
+                                                echo '<div class="gmail-attachment" title="'.$row['attachment_count'].' attachment(s)">
+                                                        <i class="fas fa-paperclip"></i>
+                                                      </div>';
+                                            }
+                                            
+                                            echo '<span class="gmail-status '.$status_class.'">'.htmlspecialchars($row['status'] ?? 'PENDING').'</span>
+                                                    <div class="gmail-date">'.$date_formatted.'</div>
+                                                  </div>';
+                                        }
+                                    }
+                                    ?>
                                 </div>
-                            </div>
+                            </form>
                         </div>
-
-                        <!-- View Feedback Modal -->
-                        <div class="modal fade" id="viewFeedbackModal" tabindex="-1" role="dialog">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-info text-white">
-                                        <h5 class="modal-title">User Feedback</h5>
-                                        <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p><strong>Rating:</strong> <span id="viewRating"></span> ⭐</p>
-                                        <p><strong>Improvements:</strong> <span id="viewImprovements"></span></p>
-                                        <p><strong>Comment:</strong></p>
-                                        <p id="viewComment" class="border p-2 rounded bg-light"></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <script>
-                            function showFeedback(feedback) {
-                                document.getElementById("viewRating").textContent = feedback.rating;
-                                document.getElementById("viewImprovements").textContent = feedback.improvements || "None";
-                                document.getElementById("viewComment").textContent = feedback.comment || "No comments provided.";
-                            }
-
-                            function setIncidentId(id) {
-                                document.getElementById('feedback_incident_id').value = id;
-                            }
-                        </script>
-
 
                     </div>
-                    <!-- End of Main Content -->
+                    <!-- End of Page Content -->
                 </div>
                 <!-- End of Content Wrapper -->
                 <?php include '../footer.php'; ?>
@@ -254,37 +503,119 @@ if (logged_in()) {
             <script src="../../vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
             <script>
-                $(function() {
-                    $("#dataTable").DataTable({
-                        "autoWidth": false,
+                // Gmail-style functionality
+                const selectAllCheckbox = document.getElementById('selectAll');
+                const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+                const bulkAction = document.getElementById('bulkAction');
+                const selectionInfo = document.getElementById('selectionInfo');
+                const selectedCount = document.getElementById('selectedCount');
+                const searchInput = document.getElementById('searchInput');
+                const spamList = document.getElementById('spamList');
+                const refreshBtn = document.getElementById('refreshBtn');
+
+                // Select All functionality
+                selectAllCheckbox.addEventListener('change', function() {
+                    itemCheckboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                    updateSelectionUI();
+                });
+
+                // Individual checkbox selection
+                itemCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateSelectionUI);
+                });
+
+                function updateSelectionUI() {
+                    const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+                    selectedCount.textContent = checkedCount;
+                    
+                    if (checkedCount > 0) {
+                        selectionInfo.classList.add('active');
+                        bulkAction.disabled = false;
+                    } else {
+                        selectionInfo.classList.remove('active');
+                        bulkAction.disabled = true;
+                    }
+
+                    selectAllCheckbox.checked = checkedCount === itemCheckboxes.length && checkedCount > 0;
+                }
+
+                // Bulk action handler
+                bulkAction.addEventListener('change', function() {
+                    if (this.value) {
+                        const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+                        
+                        if (this.value === 'delete_forever') {
+                            Swal.fire({
+                                title: 'Delete Forever?',
+                                text: `Are you sure you want to permanently delete ${checkedCount} spam report(s)? This cannot be undone.`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                                confirmButtonText: 'Yes, delete forever',
+                                cancelButtonText: 'Cancel'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    document.getElementById('bulkActionForm').submit();
+                                } else {
+                                    this.value = '';
+                                }
+                            });
+                        } else if (this.value === 'not_spam') {
+                            Swal.fire({
+                                title: 'Mark as Not Spam?',
+                                text: `Move ${checkedCount} report(s) back to Incidents?`,
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#6c757d',
+                                confirmButtonText: 'Yes, not spam',
+                                cancelButtonText: 'Cancel'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    document.getElementById('bulkActionForm').submit();
+                                } else {
+                                    this.value = '';
+                                }
+                            });
+                        }
+                    }
+                });
+
+                // Search functionality
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const items = document.querySelectorAll('.gmail-item');
+                    
+                    items.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
                     });
                 });
-            </script>
-            <script>
-                // Function to export HTML table to Excel
-                function convertToImage() {
-                    const element = document.getElementById('myDiv');
 
-                    html2canvas(element).then(canvas => {
-                        const imgData = canvas.toDataURL('image/png');
-
-                        // Create a link element
-                        const downloadLink = document.createElement('a');
-
-                        // Set the href attribute with the data URL
-                        downloadLink.href = imgData;
-
-                        // Set the download attribute with the desired file name
-                        downloadLink.download = 'invoice.png'; // You can change the file name and extension
-
-                        // Append the link to the body and click it programmatically
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-
-                        // Remove the link from the DOM
-                        document.body.removeChild(downloadLink);
-                    });
+                // View report
+                function viewReport(id) {
+                    window.location.href = 'view.php?id=' + id;
                 }
+
+                // Toggle star
+                function toggleStar(element) {
+                    element.classList.toggle('far');
+                    element.classList.toggle('fas');
+                    element.classList.toggle('starred');
+                }
+
+                // Refresh button
+                refreshBtn.addEventListener('click', function() {
+                    this.querySelector('i').classList.add('fa-spin');
+                    location.reload();
+                });
             </script>
     </body>
 

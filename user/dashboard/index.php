@@ -379,6 +379,95 @@ include '../../includes/theme_system.php';
                 </div>
             </section>
 
+            <!-- Cybersecurity Threats Section -->
+            <section class="threats-section py-5" style="background: #fff;">
+                <div class="container">
+                    <div class="row text-center mb-4">
+                        <div class="col-12">
+                            <h2 class="font-weight-bold text-dark mb-3">Common Cybersecurity Threats</h2>
+                            <p class="text-muted">Alamin ang mga common threats at kung paano protektahan ang sarili</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Phishing -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="threat-card h-100" style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: none; transition: all 0.3s ease;">
+                                <div class="threat-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(45deg, #1e3c72, #2a5298); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-fish text-white fa-2x"></i>
+                                </div>
+                                <h5 class="font-weight-bold text-dark mb-2">Phishing</h5>
+                                <p class="text-muted small mb-0">Mga manlolokong mensahe o email na naglalayong nakawin ang personal na impormasyon.</p>
+                            </div>
+                        </div>
+
+                        <!-- Identity Theft -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="threat-card h-100" style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: none; transition: all 0.3s ease;">
+                                <div class="threat-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(45deg, #1e3c72, #2a5298); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user-secret text-white fa-2x"></i>
+                                </div>
+                                <h5 class="font-weight-bold text-dark mb-2">Identity Theft</h5>
+                                <p class="text-muted small mb-0">Di-awtorisadong paggamit ng personal na impormasyon para magpanggap o pasukin ang accounts.</p>
+                            </div>
+                        </div>
+
+                        <!-- Online Fraud -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="threat-card h-100" style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: none; transition: all 0.3s ease;">
+                                <div class="threat-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(45deg, #1e3c72, #2a5298); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-money-bill-wave text-white fa-2x"></i>
+                                </div>
+                                <h5 class="font-weight-bold text-dark mb-2">Online Fraud</h5>
+                                <p class="text-muted small mb-0">Mga mapanlinlang na gawain tulad ng panloloko sa pera at investment scams.</p>
+                            </div>
+                        </div>
+
+                        <!-- Hacking -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="threat-card h-100" style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: none; transition: all 0.3s ease;">
+                                <div class="threat-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(45deg, #1e3c72, #2a5298); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user-lock text-white fa-2x"></i>
+                                </div>
+                                <h5 class="font-weight-bold text-dark mb-2">Hacking</h5>
+                                <p class="text-muted small mb-0">Iligal na pag-access sa mga computer system, network, o account nang walang awtorisasyon.</p>
+                            </div>
+                        </div>
+
+                        <!-- Cyberbullying -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="threat-card h-100" style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: none; transition: all 0.3s ease;">
+                                <div class="threat-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(45deg, #1e3c72, #2a5298); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-bullhorn text-white fa-2x"></i>
+                                </div>
+                                <h5 class="font-weight-bold text-dark mb-2">Cyberbullying</h5>
+                                <p class="text-muted small mb-0">Pang-aapi, pagbabanta, o pananakot sa pamamagitan ng internet at social media.</p>
+                            </div>
+                        </div>
+
+                        <!-- Malware -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="threat-card h-100" style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: none; transition: all 0.3s ease;">
+                                <div class="threat-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(45deg, #1e3c72, #2a5298); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-bug text-white fa-2x"></i>
+                                </div>
+                                <h5 class="font-weight-bold text-dark mb-2">Malware & Viruses</h5>
+                                <p class="text-muted small mb-0">Mapaminsalang software na nakakasira sa inyong device at nakakakuha ng data.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- View All Button -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="../threats/" class="btn btn-primary btn-lg px-5" style="border-radius: 50px; font-weight: 600; box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);">
+                                <i class="fas fa-shield-alt mr-2"></i>View All Threats
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Recent Incidents Section -->
             <section class="recent-incidents py-5">
                 <div class="container">
@@ -454,6 +543,30 @@ include '../../includes/theme_system.php';
             .card:hover {
                 transform: translateY(-5px);
                 box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+            }
+            
+            /* Threat Card Hover Effects */
+            .threat-card {
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            
+            .threat-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+            }
+            
+            .threat-card:hover .threat-icon {
+                transform: scale(1.1) rotate(5deg);
+            }
+            
+            .threat-icon {
+                transition: all 0.3s ease;
+            }
+            
+            /* Threats Section Animation */
+            .threats-section {
+                animation: slideUp 1s ease-in-out 0.5s both;
             }
             
             /* Button Hover Effects */

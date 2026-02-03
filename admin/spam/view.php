@@ -231,8 +231,475 @@ $suggestion = $row['suggestion'];
 
     <!-- Custom styles for this template-->
     <link href="../../css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../../js/sweetalert2.min.css" rel="stylesheet">
+    <script src="../../js/sweetalert2.min.js"></script>
     
-    <!-- Custom styles for document view -->
+    <!-- Gmail-style view -->
+    <style>
+        body {
+            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        /* Gmail Toolbar */
+        .gmail-toolbar {
+            background: white;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-btn {
+            background: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: #5f6368;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .toolbar-btn i {
+            font-size: 16px;
+        }
+        
+        .toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background: #e0e0e0;
+            margin: 0 4px;
+        }
+        
+        /* Gmail Message Container */
+        .gmail-message {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            margin: 16px auto;
+            max-width: 1200px;
+        }
+        
+        /* Message Header */
+        .message-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .message-subject {
+            font-size: 22px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .spam-label {
+            background: #fef7e0;
+            color: #f9ab00;
+            border: 1px solid #fdd663;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-badge-gmail {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-pending { background: #fef7e0; color: #f9ab00; }
+        .status-investigating { background: #e8f0fe; color: #1967d2; }
+        .status-resolved { background: #e6f4ea; color: #137333; }
+        
+        .sender-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        
+        .sender-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1a73e8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        
+        .sender-details {
+            flex: 1;
+        }
+        
+        .sender-name {
+            font-size: 14px;
+            color: #202124;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .sender-email {
+            font-size: 12px;
+            color: #5f6368;
+        }
+        
+        .message-date {
+            font-size: 12px;
+            color: #5f6368;
+            white-space: nowrap;
+        }
+        
+        .message-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5f6368;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-icon:hover {
+            background: #f1f3f4;
+        }
+        
+        /* Message Body */
+        .message-body {
+            padding: 24px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #202124;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            font-size: 13px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #1a73e8;
+        }
+        
+        .info-item:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .info-item:nth-child(1) { border-left-color: #667eea; }
+        .info-item:nth-child(2) { border-left-color: #f5576c; }
+        .info-item:nth-child(3) { border-left-color: #f9ab00; }
+        .info-item:nth-child(4) { border-left-color: #4facfe; }
+        .info-item:nth-child(5) { border-left-color: #43e97b; }
+        .info-item:nth-child(6) { border-left-color: #fa709a; }
+        
+        .info-label {
+            color: #5f6368;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            color: #202124;
+        }
+        
+        .description-section {
+            margin: 20px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #1a73e8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .description-section:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .section-title {
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Attachments */
+        .attachments-section {
+            margin: 20px 0;
+        }
+        
+        .attachment-card {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .attachment-card:hover {
+            border-color: #1a73e8;
+            background: #f8f9fa;
+        }
+        
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            background: #e8f0fe;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a73e8;
+            margin-right: 12px;
+        }
+        
+        .attachment-info {
+            flex: 1;
+        }
+        
+        .attachment-name {
+            font-size: 14px;
+            color: #202124;
+            font-weight: 500;
+        }
+        
+        .attachment-size {
+            font-size: 12px;
+            color: #5f6368;
+        }
+        
+        .attachment-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .attachment-btn {
+            padding: 6px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            background: white;
+            color: #1a73e8;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .attachment-btn:hover {
+            background: #f8f9fa;
+            border-color: #1a73e8;
+        }
+        
+        /* Comments Section */
+        .comments-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            margin: 16px auto;
+            max-width: 1200px;
+            padding: 24px;
+        }
+        
+        .comment-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .comment-author {
+            font-weight: 500;
+            color: #202124;
+            font-size: 14px;
+        }
+        
+        .comment-date {
+            font-size: 12px;
+            color: #5f6368;
+        }
+        
+        .comment-text {
+            font-size: 14px;
+            color: #5f6368;
+            line-height: 1.5;
+        }
+        
+        .reply-box {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .reply-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #1a73e8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .reply-input-group {
+            flex: 1;
+        }
+        
+        .reply-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .reply-input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 1px 6px rgba(26, 115, 232, 0.3);
+        }
+        
+        .reply-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-gmail {
+            padding: 8px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-gmail-primary {
+            background: #1a73e8;
+            color: white;
+        }
+        
+        .btn-gmail-primary:hover {
+            background: #1557b0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .btn-gmail-secondary {
+            background: white;
+            color: #5f6368;
+            border: 1px solid #dadce0;
+        }
+        
+        .btn-gmail-secondary:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Status Update Section */
+        .status-update-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            margin: 16px auto;
+            max-width: 1200px;
+            padding: 24px;
+        }
+        
+        .status-select {
+            padding: 10px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #202124;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .status-select:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 1px 6px rgba(26, 115, 232, 0.3);
+        }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .gmail-message { box-shadow: none; }
+        }
+        
+        @media (max-width: 768px) {
+            .gmail-toolbar {
+                padding: 8px 12px;
+            }
+            
+            .toolbar-btn {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+            
+            .message-subject {
+                font-size: 18px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    
     <style>
         /* Document-style report styling */
         @media print {
@@ -369,22 +836,23 @@ $suggestion = $row['suggestion'];
         }
         
         .attachment-item {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
+            background-color: white;
+            border: 1px solid #e0e0e0;
             padding: 10px 15px;
             margin-bottom: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
         
         .attachment-item:hover {
-            background-color: #e9ecef;
+            background-color: #f8f9fa;
             border-color: #007bff;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
         }
         
         .attachment-item .file-info {
@@ -526,210 +994,155 @@ $suggestion = $row['suggestion'];
                <?php include'../nav.php';?>
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
-                    <!-- Control Buttons -->
-                    <div class="control-buttons no-print">
-                        <a href="index.php" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Reports
-                        </a>
-                        <button onclick="window.print()" class="btn btn-primary">
-                            <i class="fas fa-print me-2"></i>Print Report
+                <div class="container-fluid" style="background: #f5f5f5; padding: 0;">
+                    
+                    <!-- Gmail Toolbar -->
+                    <div class="gmail-toolbar no-print">
+                        <button class="toolbar-btn" onclick="window.location.href='index.php'">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Back</span>
+                        </button>
+                        
+                        <div class="toolbar-divider"></div>
+                        
+                        <button class="toolbar-btn" onclick="markNotSpam()">
+                            <i class="fas fa-inbox"></i>
+                            <span>Not spam</span>
+                        </button>
+                        
+                        <button class="toolbar-btn" onclick="deleteForever()">
+                            <i class="fas fa-trash"></i>
+                            <span>Delete</span>
+                        </button>
+                        
+                        <div class="toolbar-divider"></div>
+                        
+                        <button class="toolbar-btn" onclick="window.print()">
+                            <i class="fas fa-print"></i>
+                            <span>Print</span>
+                        </button>
+                        
+                        <button class="toolbar-btn" onclick="refreshPage()">
+                            <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
 
-                    <!-- Document Container -->
-                    <div class="document-container">
-                        
-                        <!-- Document Header -->
-                        <div class="document-header">
-                            <h1 class="document-title">INCIDENT REPORT</h1>
-                            <div class="document-subtitle">Official Investigation Document</div>
-                            <div class="status-badge status-<?= strtolower($status) ?>"><?= $status ?></div>
-                            <div class="report-meta">
-                                <strong>Report ID:</strong> #<?= str_pad($id, 6, '0', STR_PAD_LEFT) ?> | 
-                                <strong>Generated:</strong> <?= date('F j, Y \a\t g:i A') ?>
+                    <!-- Gmail Message -->
+                    <div class="gmail-message">
+                        <!-- Message Header -->
+                        <div class="message-header">
+                            <div class="message-subject">
+                                <span class="spam-label"><i class="fas fa-exclamation-triangle"></i> SPAM</span>
+                                <?= htmlspecialchars($incident_data['title'] ?? 'No Subject') ?>
+                                <span class="status-badge-gmail status-<?= strtolower($status) ?>"><?= $status ?></span>
                             </div>
-                        </div>
-
-                        <!-- Report Information Section -->
-                        <div class="section-header">
-                            <i class="fas fa-info-circle me-2"></i>Report Information
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Report ID:</div>
-                            <div class="field-value">#<?= str_pad($id, 6, '0', STR_PAD_LEFT) ?></div>
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Incident Title:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['title']) ?></div>
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Category:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['category']) ?></div>
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Date Reported:</div>
-                            <div class="field-value"><?= date('F j, Y \a\t g:i A', strtotime($incident_data['date'])) ?></div>
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Date Created:</div>
-                            <div class="field-value"><?= date('F j, Y \a\t g:i A', strtotime($incident_data['created_at'])) ?></div>
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Current Status:</div>
-                            <div class="field-value">
-                                <span class="status-badge status-<?= strtolower($status) ?>"><?= $status ?></span>
+                            
+                            <div class="sender-info">
+                                <div class="sender-avatar">
+                                    <?= strtoupper(substr($incident_data['full_name'] ?? 'U', 0, 1)) ?>
+                                </div>
+                                
+                                <div class="sender-details" style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                                        <div>
+                                            <div class="sender-name"><?= htmlspecialchars($incident_data['full_name'] ?? 'Unknown') ?></div>
+                                            <div class="sender-email">
+                                                &lt;<?= htmlspecialchars($incident_data['email'] ?? 'no-email@example.com') ?>&gt;
+                                            </div>
+                                        </div>
+                                        <div class="message-date">
+                                            <?= date('M j, Y, g:i A', strtotime($incident_data['date'])) ?>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="message-actions">
+                                        <div class="action-icon" title="Reply" onclick="focusReply()">
+                                            <i class="fas fa-reply"></i>
+                                        </div>
+                                        <div class="action-icon" title="Star">
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="field-row">
-                            <div class="field-label">Severity Level:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['severity_level']) ?></div>
-                        </div>
-                        
-                        <?php if (!empty($incident_data['location'])): ?>
-                        <div class="field-row">
-                            <div class="field-label">Location:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['location']) ?></div>
-                        </div>
-                        <?php endif; ?>
-
-                        <!-- Reporter Information Section -->
-                        <div class="section-header">
-                            <i class="fas fa-user me-2"></i>Reporter Information
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Full Name:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['full_name']) ?></div>
-                        </div>
-                        
-                        <div class="field-row">
-                            <div class="field-label">Email Address:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['email']) ?></div>
-                        </div>
-                        
-                        <?php if (!empty($incident_data['phone'])): ?>
-                        <div class="field-row">
-                            <div class="field-label">Phone Number:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['phone']) ?></div>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($incident_data['role'])): ?>
-                        <div class="field-row">
-                            <div class="field-label">Role/Position:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['role']) ?></div>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($incident_data['department'])): ?>
-                        <div class="field-row">
-                            <div class="field-label">Department:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['department']) ?></div>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($incident_data['address'])): ?>
-                        <div class="field-row">
-                            <div class="field-label">Address:</div>
-                            <div class="field-value"><?= htmlspecialchars($incident_data['address']) ?></div>
-                        </div>
-                        <?php endif; ?>
-
-                        <!-- Incident Description Section -->
-                        <div class="section-header">
-                            <i class="fas fa-clipboard-list me-2"></i>Incident Description
-                        </div>
-                        
-                        <div class="description-box">
-                            <?= nl2br(htmlspecialchars($incident_data['description'])) ?>
-                        </div>
-
-                        <!-- Evidence Section -->
-                        <div class="section-header">
-                            <i class="fas fa-file-alt me-2"></i>Evidence Collected
-                        </div>
-                        
-                        <div class="evidence-grid">
-                            <div class="evidence-item">
-                                <i class="fas fa-file-text <?= $incident_data['evidence_logs'] ? 'evidence-yes' : 'evidence-no' ?>"></i>
-                                <div><strong>System Logs</strong></div>
-                                <div><?= $incident_data['evidence_logs'] ? 'Collected' : 'Not Collected' ?></div>
-                                <?php if ($incident_data['evidence_logs']): ?>
-                                <button class="btn btn-sm btn-primary no-print mt-2" onclick="viewEvidenceDetails('logs')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
+                        <!-- Message Body -->
+                        <div class="message-body">
+                            <!-- Report Information Grid -->
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Report ID</div>
+                                    <div class="info-value">#<?= str_pad($id, 6, '0', STR_PAD_LEFT) ?></div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Category</div>
+                                    <div class="info-value"><?= htmlspecialchars($incident_data['category'] ?? 'N/A') ?></div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Severity Level</div>
+                                    <div class="info-value"><?= htmlspecialchars($incident_data['severity_level'] ?? 'N/A') ?></div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Date Created</div>
+                                    <div class="info-value"><?= date('M j, Y, g:i A', strtotime($incident_data['created_at'])) ?></div>
+                                </div>
+                                <?php if (!empty($incident_data['location'])): ?>
+                                <div class="info-item">
+                                    <div class="info-label">Location</div>
+                                    <div class="info-value"><?= htmlspecialchars($incident_data['location']) ?></div>
+                                </div>
+                                <?php endif; ?>
+                                <?php if (!empty($incident_data['phone'])): ?>
+                                <div class="info-item">
+                                    <div class="info-label">Phone</div>
+                                    <div class="info-value"><?= htmlspecialchars($incident_data['phone']) ?></div>
+                                </div>
                                 <?php endif; ?>
                             </div>
-                            <div class="evidence-item">
-                                <i class="fas fa-image <?= $incident_data['evidence_screenshots'] ? 'evidence-yes' : 'evidence-no' ?>"></i>
-                                <div><strong>Screenshots</strong></div>
-                                <div><?= $incident_data['evidence_screenshots'] ? 'Collected' : 'Not Collected' ?></div>
-                                <?php if ($incident_data['evidence_screenshots']): ?>
-                                <?php endif; ?>
+                            
+                            <!-- Description -->
+                            <div class="description-section">
+                                <div class="section-title">
+                                    <i class="fas fa-align-left"></i>
+                                    Incident Description
+                                </div>
+                                <div><?= nl2br(htmlspecialchars($incident_data['description'] ?? '')) ?></div>
                             </div>
-                            <div class="evidence-item">
-                                <i class="fas fa-envelope <?= $incident_data['evidence_email'] ? 'evidence-yes' : 'evidence-no' ?>"></i>
-                                <div><strong>Email Evidence</strong></div>
-                                <div><?= $incident_data['evidence_email'] ? 'Collected' : 'Not Collected' ?></div>
-                                <?php if ($incident_data['evidence_email']): ?>
-                                <button class="btn btn-sm btn-primary no-print mt-2" onclick="viewEvidenceDetails('email')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <?php endif; ?>
+                            
+                            <?php if (!empty($incident_data['additional_info'])): ?>
+                            <div class="description-section">
+                                <div class="section-title">
+                                    <i class="fas fa-info-circle"></i>
+                                    Additional Information
+                                </div>
+                                <div><?= nl2br(htmlspecialchars($incident_data['additional_info'])) ?></div>
                             </div>
-                            <div class="evidence-item">
-                                <i class="fas fa-folder <?= $incident_data['evidence_other'] ? 'evidence-yes' : 'evidence-no' ?>"></i>
-                                <div><strong>Other Evidence</strong></div>
-                                <div><?= $incident_data['evidence_other'] ? 'Collected' : 'Not Collected' ?></div>
-                                <?php if ($incident_data['evidence_other']): ?>
-                                <button class="btn btn-sm btn-primary no-print mt-2" onclick="viewEvidenceDetails('other')">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <!-- File Attachments -->
+                            <?php endif; ?>
+                            
+                            <!-- Attachments -->
+                            <!-- File Attachments -->
                         <?php
                         $query = "SELECT * FROM attachment WHERE incident_id = '".$id."'";
                         $result = $conn->query($query);
-                        
-                        // Debug: Show what we found in the database
-                        echo "<!-- DEBUG INFO -->";
-                        echo "<!-- Spam ID: ".$id." -->";
-                        echo "<!-- Query: ".$query." -->";
-                        echo "<!-- Attachments found: ".$result->num_rows." -->";
-                        
                         if ($result->num_rows > 0):
                         ?>
                         <div class="section-header">
                             <i class="fas fa-paperclip me-2"></i>Attached Files
                         </div>
-                        
                         <ul class="attachment-list">
                             <?php
                             while ($row = $result->fetch_assoc()) {
-                                // Debug: Show each attachment record
-                                echo "<!-- Attachment ID: ".$row['id']." | Filename: ".$row['filename']." | Path: ".$row['attachment']." -->";
-                                
                                 $file_extension = pathinfo($row['filename'], PATHINFO_EXTENSION);
                                 $is_image = in_array(strtolower($file_extension), ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']);
                                 
                                 echo '<li class="attachment-item">
-                                        <div class="file-info">
+                                        <div class="attachment-info">
                                             <i class="fas fa-file me-2"></i>
-                                            <span>'.htmlspecialchars($row['filename']).'</span>
+                                            <span class="attachment-name">'.htmlspecialchars($row['filename']).'</span>
                                         </div>
-                                        <div class="file-actions no-print">
-                                            <button class="btn btn-sm btn-outline-primary" onclick="viewAttachment(\''.htmlspecialchars($row['attachment']).'\', \''.htmlspecialchars($row['filename']).'\', '.($is_image ? 'true' : 'false').')">
+                                        <div class="attachment-actions no-print">
+                                            <button class="btn btn-sm btn-outline-primary me-2" onclick="viewAttachment(\''.htmlspecialchars($row['attachment']).'\', \''.htmlspecialchars($row['filename']).'\', '.($is_image ? 'true' : 'false').')">
                                                 <i class="fas fa-eye"></i> View
                                             </button>
                                             <a href="'.htmlspecialchars($row['attachment']).'" download="'.htmlspecialchars($row['filename']).'" class="btn btn-sm btn-outline-success">
@@ -741,92 +1154,11 @@ $suggestion = $row['suggestion'];
                             ?>
                         </ul>
                         <?php endif; ?>
-
-                        <!-- Additional Information Section -->
-                        <?php if (!empty($incident_data['additional_info'])): ?>
-                        <div class="section-header">
-                            <i class="fas fa-plus-circle me-2"></i>Additional Information
                         </div>
-                        
-                        <div class="description-box">
-                            <?= nl2br(htmlspecialchars($incident_data['additional_info'])) ?>
-                        </div>
-                        <?php endif; ?>
-
-                        <!-- Report Footer -->
-                        <div style="margin-top: 50px; border-top: 2px solid #000; padding-top: 20px; text-align: center;">
-                            <p style="font-size: 0.9rem; color: #666;">
-                                <strong>End of Report</strong><br>
-                                This document contains confidential information and should be handled according to organizational security policies.
-                            </p>
-                        </div>
-
                     </div>
-                    <!-- End Document Container -->
 
-                    <!-- Administrative Controls (No Print) -->
-                    <div class="no-print">
-                        <div style="background: white; padding: 30px; margin-top: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
-                            
-                            <!-- Comments Section -->
-                            <h5><i class="fas fa-comments me-2"></i>Administrative Comments</h5>
-                            
-                            <!-- Comment Form -->
-                            <form method="post" class="mb-4">
-                                <div class="mb-3">
-                                    <label for="commentInput" class="form-label">Add Comment:</label>
-                                    <textarea class="form-control" name="comment" id="commentInput" rows="3" placeholder="Enter your administrative comment here..."></textarea>
-                                </div>
-                                <button type="submit" name="btn_comment" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>Post Comment
-                                </button>
-                            </form>
-                            
-                            <!-- Existing Comments -->
-                            <?php
-                            $query = "SELECT * FROM comments WHERE incident_id = '".$id."' ORDER BY date DESC";
-                            $result = $conn->query($query);
-                            if ($result->num_rows > 0):
-                            ?>
-                            <hr>
-                            <h6>Comment History</h6>
-                            <?php
-                            while ($row = $result->fetch_assoc()) {
-                                echo '<div class="border-start border-primary border-3 ps-3 mb-3">
-                                        <div class="d-flex justify-content-between">
-                                            <h6 class="mb-1">'.$row['user_id'].'</h6>
-                                            <small class="text-muted">'.$row['date'].'</small>
-                                        </div>
-                                        <p class="mb-0">'.$row['comment'].'</p>
-                                    </div>';
-                            }
-                            ?>
-                            <?php endif; ?>
-
-                            <!-- Status Update Form -->
-                            <hr>
-                            <form method="post">
-                                <h5><i class="fas fa-edit me-2"></i>Update Status</h5>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <select class="form-control" id="status" name="status" required>
-                                            <option value="" disabled>Select new status</option>
-                                            <option value="PENDING" <?= ($status == 'PENDING') ? 'selected' : '' ?>>PENDING</option>
-                                            <option value="INVESTIGATING" <?= ($status == 'INVESTIGATING') ? 'selected' : '' ?>>INVESTIGATING</option>
-                                            <option value="RESOLVED" <?= ($status == 'RESOLVED') ? 'selected' : '' ?>>RESOLVED</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button name="btn_save" type="submit" class="btn btn-success">
-                                            <i class="fas fa-save me-2"></i>Update Status
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                            
-                        </div>
-                    </div>            </div>
-        </div>
+                </div>
+                <!-- End Page Content -->
             
             <!-- End of Main Content -->
 
@@ -916,6 +1248,74 @@ $suggestion = $row['suggestion'];
     <script src="../../js/sb-admin-2.min.js"></script>
 
     <script>
+    // Gmail-style functions
+    function focusReply() {
+        document.getElementById('commentInput').focus();
+        document.getElementById('commentInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    
+    function refreshPage() {
+        location.reload();
+    }
+    
+    function markNotSpam() {
+        Swal.fire({
+            title: 'Mark as Not Spam?',
+            text: 'This will move the report back to Incidents.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1a73e8',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, not spam',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'move_to_incidents.php';
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'spam_id';
+                input.value = '<?= $id ?>';
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+    
+    function deleteForever() {
+        Swal.fire({
+            title: 'Delete Forever?',
+            text: 'This spam report will be permanently deleted. This cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete forever',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'delete_spam.php';
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'spam_id';
+                input.value = '<?= $id ?>';
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+    
     function viewEvidenceDetails(type) {
         let content = '';
         let title = '';

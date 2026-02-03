@@ -216,10 +216,70 @@ $suggestion = isset($row['suggestion']) ? $row['suggestion'] : "No specific sugg
             }
             
             /* Make evidence section mobile-friendly */
-            .d-flex.justify-content-between.align-items-center {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                gap: 0.5rem;
+            .evidence-item {
+                display: flex !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+            
+            .evidence-buttons {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 0.5rem !important;
+                flex-shrink: 0 !important;
+            }
+            
+            .evidence-buttons .btn {
+                background-color: transparent !important;
+                background-image: none !important;
+                border: 2px solid !important;
+                white-space: nowrap !important;
+                font-weight: 600 !important;
+                transition: background-color 0.3s ease !important;
+                box-shadow: none !important;
+            }
+            
+            .evidence-buttons .btn:active,
+            .evidence-buttons .btn:focus {
+                background-color: transparent !important;
+                box-shadow: none !important;
+            }
+            
+            .evidence-buttons .btn-info {
+                color: #17a2b8 !important;
+                border-color: #17a2b8 !important;
+            }
+            
+            .evidence-buttons .btn-info:hover {
+                background-color: rgba(23, 162, 184, 0.1) !important;
+                color: #17a2b8 !important;
+            }
+            
+            .evidence-buttons .btn-primary {
+                color: #007bff !important;
+                border-color: #007bff !important;
+            }
+            
+            .evidence-buttons .btn-primary:hover {
+                background-color: rgba(0, 123, 255, 0.1) !important;
+                color: #007bff !important;
+            }
+            
+            @media (max-width: 576px) {
+                .evidence-item {
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                }
+                
+                .evidence-buttons {
+                    margin-top: 0.5rem !important;
+                    width: 100% !important;
+                }
+                
+                .evidence-buttons .btn {
+                    flex: 1 !important;
+                }
             }
             
             /* Mobile-friendly buttons */
@@ -273,6 +333,21 @@ $suggestion = isset($row['suggestion']) ? $row['suggestion'] : "No specific sugg
             .container.mt-5 {
                 max-width: 1200px !important;
             }
+        }
+        
+        /* Evidence section - desktop layout */
+        .evidence-item {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+        }
+        
+        .evidence-buttons {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 0.5rem !important;
+            margin-left: auto !important;
         }
     </style>
 
@@ -353,11 +428,19 @@ $suggestion = isset($row['suggestion']) ? $row['suggestion'] : "No specific sugg
                                                                 $query = "SELECT * FROM attachment WHERE incident_id = '".$id."'";
                                                                 $result = $conn->query($query);
                                                                 while ($row = $result->fetch_assoc()) {
-                                                                echo '  <div class="bg-light p-3 rounded border d-flex justify-content-between align-items-center mb-2">
+                                                                    $fileExtension = strtolower(pathinfo($row['filename'], PATHINFO_EXTENSION));
+                                                                    $isImage = in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']);
+                                                                    $isPdf = $fileExtension === 'pdf';
+                                                                echo '  <div class="bg-light p-3 rounded border mb-2 evidence-item">
                                                                             <div><i class="fas fa-file me-2"></i> '.$row['filename'].'</div>
-                                                                            <a href="'.$row['attachment'].'" target="_blank" class="text-decoration-none text-primary">
-                                                                                <i class="fas fa-download me-1"></i>Download
-                                                                            </a>
+                                                                            <div class="evidence-buttons">
+                                                                                <button onclick="viewEvidence(\''.$row['attachment'].'\', \''.$row['filename'].'\', '.($isImage ? 'true' : 'false').', '.($isPdf ? 'true' : 'false').')" class="btn btn-sm btn-info">
+                                                                                    <i class="fas fa-eye me-1"></i>View
+                                                                                </button>
+                                                                                <a href="'.$row['attachment'].'" target="_blank" class="btn btn-sm btn-primary text-decoration-none">
+                                                                                    <i class="fas fa-download me-1"></i>Download
+                                                                                </a>
+                                                                            </div>
                                                                         </div>';
                                                                 }
                                                                 ?>
@@ -366,17 +449,19 @@ $suggestion = isset($row['suggestion']) ? $row['suggestion'] : "No specific sugg
 
                                                             <div class="card mb-4">
                                                                 <div class="card-header">
-                                                                    <i class="fas fa-comments me-1"></i>
-                                                                    Comments
+                                                                    <i class="fas fa-comment-dots me-1"></i>
+                                                                    Chat Admin
                                                                 </div>
                                                                 <div class="card-body">
                                                                     <!-- Comment Form -->
                                                                     <form method="post">
                                                                     <div class="mb-3">
-                                                                        <label for="commentInput" class="form-label">Leave a comment:</label>
-                                                                        <textarea class="form-control" name="comment" id="commentInput" rows="3" placeholder="Type your comment here..."></textarea>
+                                                                        <label for="commentInput" class="form-label">Send a message to Admin:</label>
+                                                                        <textarea class="form-control" name="comment" id="commentInput" rows="3" placeholder="Type your message here..."></textarea>
                                                                     </div>
-                                                                    <button type="submit" name="btn_comment" class="btn btn-primary">Post Comment</button>
+                                                                    <button type="submit" name="btn_comment" class="btn btn-primary">
+                                                                        <i class="fas fa-paper-plane me-1"></i> Send Message
+                                                                    </button>
                                                                     </form>
                                                                     <hr>
 
@@ -450,6 +535,29 @@ $suggestion = isset($row['suggestion']) ? $row['suggestion'] : "No specific sugg
         </div>
     </div>
 
+    <!-- Evidence Viewer Modal -->
+    <div class="modal fade" id="evidenceModal" tabindex="-1" role="dialog" aria-labelledby="evidenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="evidenceModalLabel">Evidence Viewer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center" id="evidenceModalBody" style="max-height: 70vh; overflow-y: auto;">
+                    <!-- Evidence content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="evidenceDownloadLink" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-download me-1"></i>Download
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap core JavaScript-->
     <script src="../../vendor/jquery/jquery.min.js"></script>
     <script src="../../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -493,6 +601,30 @@ $suggestion = isset($row['suggestion']) ? $row['suggestion'] : "No specific sugg
                   document.getElementById('deleteForm').submit();
               }
           });
+      }
+      
+      // View evidence function
+      function viewEvidence(filePath, fileName, isImage, isPdf) {
+          $('#evidenceModalLabel').text(fileName);
+          $('#evidenceDownloadLink').attr('href', filePath);
+          
+          let content = '';
+          
+          if (isImage) {
+              content = '<img src="' + filePath + '" class="img-fluid" alt="' + fileName + '" style="max-width: 100%; max-height: 65vh; object-fit: contain;">';
+          } else if (isPdf) {
+              content = '<iframe src="' + filePath + '" style="width: 100%; height: 65vh; border: none;"></iframe>';
+          } else {
+              content = '<div class="alert alert-info">' +
+                       '<i class="fas fa-info-circle me-2"></i>' +
+                       '<strong>Preview not available for this file type.</strong><br>' +
+                       'Please download the file to view its contents.' +
+                       '</div>' +
+                       '<p class="text-muted">File: ' + fileName + '</p>';
+          }
+          
+          $('#evidenceModalBody').html(content);
+          $('#evidenceModal').modal('show');
       }
     </script>
     

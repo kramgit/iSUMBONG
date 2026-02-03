@@ -253,6 +253,117 @@ $current_admin = get_logged_user();
 
                     </div>
 
+                    <!-- User Statistics Row -->
+                    <div class="row">
+                      <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card shadow-sm" style="border-radius: 1rem; background: #fff;">
+                          <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                              <div class="icon-circle bg-primary text-white mr-3" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-users fa-lg"></i>
+                              </div>
+                              <div>
+                                <h6 class="text-uppercase font-weight-bold mb-1 text-primary">Total Users</h6>
+                                <small class="text-dark font-weight-normal">Registered</small>
+                              </div>
+                            </div>
+                            <div class="text-center">
+                              <h2 class="font-weight-bold text-dark mb-0">
+                                <?php
+                                  $query = "SELECT COUNT(user_id) as total FROM users WHERE role = 'user'";
+                                  $result = $conn->query($query);
+                                  if ($row = $result->fetch_assoc()) {
+                                    echo $row['total'];
+                                  }
+                                ?>
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card shadow-sm" style="border-radius: 1rem; background: #fff;">
+                          <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                              <div class="icon-circle bg-success text-white mr-3" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user-check fa-lg"></i>
+                              </div>
+                              <div>
+                                <h6 class="text-uppercase font-weight-bold mb-1 text-success">Active Users</h6>
+                                <small class="text-dark">Verified</small>
+                              </div>
+                            </div>
+                            <div class="text-center">
+                              <h2 class="font-weight-bold text-dark mb-0">
+                                <?php
+                                  $query = "SELECT COUNT(user_id) as total FROM users WHERE role = 'user' AND is_verified = 1 AND status = 'ACTIVE'";
+                                  $result = $conn->query($query);
+                                  if ($row = $result->fetch_assoc()) {
+                                    echo $row['total'];
+                                  }
+                                ?>
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card shadow-sm" style="border-radius: 1rem; background: #fff;">
+                          <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                              <div class="icon-circle bg-warning text-white mr-3" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user-clock fa-lg"></i>
+                              </div>
+                              <div>
+                                <h6 class="text-uppercase font-weight-bold mb-1 text-warning">Pending</h6>
+                                <small class="text-dark">Unverified</small>
+                              </div>
+                            </div>
+                            <div class="text-center">
+                              <h2 class="font-weight-bold text-dark mb-0">
+                                <?php
+                                  $query = "SELECT COUNT(user_id) as total FROM users WHERE role = 'user' AND is_verified = 0";
+                                  $result = $conn->query($query);
+                                  if ($row = $result->fetch_assoc()) {
+                                    echo $row['total'];
+                                  }
+                                ?>
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card shadow-sm" style="border-radius: 1rem; background: #fff;">
+                          <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                              <div class="icon-circle bg-info text-white mr-3" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user-plus fa-lg"></i>
+                              </div>
+                              <div>
+                                <h6 class="text-uppercase font-weight-bold mb-1 text-info">New This Month</h6>
+                                <small class="text-dark">Registrations</small>
+                              </div>
+                            </div>
+                            <div class="text-center">
+                              <h2 class="font-weight-bold text-dark mb-0">
+                                <?php
+                                  $query = "SELECT COUNT(user_id) as total FROM users WHERE role = 'user' AND MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())";
+                                  $result = $conn->query($query);
+                                  if ($row = $result->fetch_assoc()) {
+                                    echo $row['total'];
+                                  }
+                                ?>
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
 
 <div class="row">
 
@@ -331,6 +442,75 @@ $current_admin = get_logged_user();
   </div>
 
                 </div>
+
+<!-- User Registration Section -->
+<div class="row">
+  <div class="col-lg-6 col-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <i class="fas fa-user-plus me-1"></i>
+          Monthly User Registrations (Jan - Dec)
+      </div>
+      <div class="card-body">
+          <canvas id="userRegChart" width="100%" height="40"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-6 col-12">
+    <div class="card shadow-sm mb-4" style="border-radius: 1rem;">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white" style="border-top-left-radius: 1rem; border-top-right-radius: 1rem;">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-users mr-2"></i>Recent User Registrations</h6>
+        <a href="../users/index.php" class="text-primary small font-weight-bold">View All Users</a>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" width="100%" cellspacing="0" style="border-radius: 0.75rem; overflow: hidden;">
+            <thead class="thead-light">
+              <tr>
+                <th class="text-secondary text-uppercase small">Name</th>
+                <th class="text-secondary text-uppercase small">Email</th>
+                <th class="text-secondary text-uppercase small">Registered</th>
+                <th class="text-secondary text-uppercase small">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $query = "SELECT * FROM users WHERE role = 'user' ORDER BY created_at DESC LIMIT 5";
+              $result = $conn->query($query);
+              while ($row = $result->fetch_assoc()) {
+                  $statusColor = "secondary";
+                  $statusText = "Unknown";
+                  
+                  if ($row['is_verified'] == 1 && $row['status'] == 'ACTIVE') {
+                      $statusColor = "success";
+                      $statusText = "Active";
+                  } elseif ($row['is_verified'] == 0) {
+                      $statusColor = "warning";
+                      $statusText = "Pending Verification";
+                  } elseif ($row['status'] == 'INACTIVE') {
+                      $statusColor = "danger";
+                      $statusText = "Inactive";
+                  }
+
+                  $registeredDate = isset($row['created_at']) ? date('M d, Y', strtotime($row['created_at'])) : 'N/A';
+
+                  echo "<tr>";
+                  echo "<td class='text-dark font-weight-bold'>" . htmlspecialchars($row['name']) . "</td>";
+                  echo "<td class='text-dark'>" . htmlspecialchars($row['email']) . "</td>";
+                  echo "<td class='text-dark'>" . $registeredDate . "</td>";
+                  echo "<td><span class='badge badge-{$statusColor} badge-pill px-3 py-2'>" . $statusText . "</span></td>";
+                  echo "</tr>";
+              }
+              ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
                 <!-- /.container-fluid -->
 
             </div>
@@ -378,7 +558,7 @@ $current_admin = get_logged_user();
     <script src="../../vendor/chart.js/Chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script>
-    let dashboardBarChart, dashboardPieChart;
+    let dashboardBarChart, dashboardPieChart, dashboardUserRegChart;
 
     // Function to load monthly incident data for dashboard
     async function loadDashboardMonthlyData() {
@@ -421,6 +601,47 @@ $current_admin = get_logged_user();
         }
     }
 
+    // Function to load user registration data for dashboard
+    async function loadDashboardUserRegData() {
+        try {
+            const response = await fetch('../api/chart-data.php?action=user_registrations');
+            const data = await response.json();
+            
+            const ctxUserReg = document.getElementById('userRegChart').getContext('2d');
+            
+            if (dashboardUserRegChart) {
+                dashboardUserRegChart.destroy();
+            }
+            
+            dashboardUserRegChart = new Chart(ctxUserReg, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: `User Registrations (${data.year})`,
+                        data: data.data,
+                        backgroundColor: '#1cc88a',
+                        borderColor: '#1cc88a',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error loading user registration data:', error);
+        }
+    }
+
     // Function to load category distribution data for dashboard
     async function loadDashboardCategoryData() {
         try {
@@ -460,6 +681,7 @@ $current_admin = get_logged_user();
     document.addEventListener('DOMContentLoaded', function() {
         loadDashboardMonthlyData();
         loadDashboardCategoryData();
+        loadDashboardUserRegData();
         
         // Add refresh button functionality
         document.getElementById('refreshBtn').addEventListener('click', function() {
@@ -468,7 +690,8 @@ $current_admin = get_logged_user();
             
             Promise.all([
                 loadDashboardMonthlyData(),
-                loadDashboardCategoryData()
+                loadDashboardCategoryData(),
+                loadDashboardUserRegData()
             ]).then(() => {
                 this.innerHTML = '<i class="fas fa-sync-alt fa-sm"></i> Refresh Charts';
                 this.disabled = false;
@@ -486,6 +709,7 @@ $current_admin = get_logged_user();
     setInterval(function() {
         loadDashboardMonthlyData();
         loadDashboardCategoryData();
+        loadDashboardUserRegData();
     }, 30000);
 </script>
 

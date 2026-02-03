@@ -8,11 +8,11 @@ loadEnv('../../.env');
 
 if (logged_in()) {
     if (isset($_POST['btn_save'])) {
-        $title = $_POST['title'];
+        $title = isset($_POST['title']) && !empty($_POST['title']) ? $_POST['title'] : '';
         $category = "";
-        $date = $_POST['date'];
-        $description = $_POST['description'] . "\n\nLocation: " . $_POST['location'] . "\nReporter Address: " . ($_POST['address'] ?? ''); // Include both location and address in description
-        $location = $_POST['location']; // Store location for database
+        $date = $_POST['date']; // Date reported by user
+        $description = $_POST['description'] . "\n\nLocation: " . ($_POST['location'] ?? '') . "\nReporter Address: " . ($_POST['address'] ?? ''); // Include both location and address in description
+        $location = $_POST['location'] ?? ''; // Store location for database
         $address = $_POST['address'] ?? ''; // Store address with fallback
         $severity_level = "";
         $full_name = $_POST['full_name'];
@@ -94,22 +94,57 @@ if (logged_in()) {
             }
         } 
 
-
-
-
-
-
-        // Get API key from environment variables for second API call
+        // Skip categorization if it's spam
+        if ($table == "spam") {
+            // Set default values for spam - no AI categorization needed
+            $category = "Spam";
+            $severity_level = "N/A";
+            $suggestion = "This report has been marked as spam and will be reviewed by administrators.";
+            // Set a default title for spam if not provided
+            if (empty($title)) {
+                $title = "Spam Report";
+            }
+        } else {
+            // Only do AI categorization for non-spam incidents
         $apiKey = env('OPENAI_API_KEY');
         if (!$apiKey) {
             echo "❌ OpenAI API key not found in environment variables.";
             exit;
         }
 
-        $prompt = "
-        Base sa title at description, classify mo ito:
+        // Available titles for auto-detection
+        $availableTitles = [
+            // Phishing - by severity
+            "May nag-send ng chat na may link",
+            "Nakatanggap ng suspicious na email o text",
+            "Nag-click ako ng suspicious link",
+            "Binigay ko ang OTP sa scammer",
+            "Na-scam ako sa pekeng website/email",
+            // Identity Theft - by severity
+            "May humihinging ng personal info ko online",
+            "May gumamit ng ID ko para mag-loan",
+            "May fake account na gumagamit ng pangalan/photos ko",
+            "Ginamit ang personal info ko nang walang pahintulot",
+            // Online Fraud - by severity
+            "May nag-aalok ng too good to be true deals",
+            "Na-scam ako sa online shopping",
+            "Na-scam ako sa investment/crypto scheme",
+            "Nawala ang pera ko sa GCash/Maya scam",
+            // Hacking - by severity
+            "May kakaibang login attempts sa account ko",
+            "Na-hack ang social media account ko",
+            "May nag-access sa account ko nang walang pahintulot",
+            "May virus/malware ang device ko",
+            // Cyberbullying - by severity
+            "Inaapi/minamaliit ako online",
+            "May nagbabanta o nang-haharass sa akin online",
+            "Pinapahiya ako o kinakalat ang photos/videos ko"
+        ];
+        $titlesJson = json_encode($availableTitles, JSON_UNESCAPED_UNICODE);
 
-        Title: $title
+        $prompt = "
+        Base sa description, classify mo ito at piliin ang PINAKA-ANGKOP na title:
+
         Description: $description
 
         Ibigay ang sagot sa JSON format lang na ganito. 
@@ -121,13 +156,60 @@ if (logged_in()) {
         - Kung mas marami ang Filipino words, gamitin ang Filipino sa suggestion.
         - Isang language lang dapat, huwag halo-halo.
 
+        SEVERITY LEVEL CRITERIA - Gamitin ang tamang criteria base sa category:
+
+        **Phishing:**
+        - Low: Suspicious message received, but no interaction
+        - High: User clicked the link or replied, but no data was stolen
+        - Critical: Credentials or sensitive data were stolen
+
+        **Identity Theft:**
+        - Low: Attempted use of personal information
+        - High: Partial misuse of identity
+        - Critical: Full identity misuse causing financial or legal damage
+
+        **Online Fraud:**
+        - Low: Scam attempt reported with no loss
+        - High: Financial loss with limited impact
+        - Critical: Large financial loss or repeated fraudulent transactions
+
+        **Unauthorized Access:**
+        - Low: Failed login attempts detected
+        - High: Account accessed, but no data loss
+        - Critical: Account fully compromised and data modified or stolen
+
+        **Cyberbullying:**
+        - Low: Verbal harassment without threats
+        - High: Repeated harassment causing emotional distress
+        - Critical: Threats, blackmail, or content causing serious harm
+
+        AVAILABLE TITLES (piliin ang ISANG title na PINAKA-ANGKOP sa description):
+        $titlesJson
+
+        TITLE SELECTION GUIDE:
+        - Phishing Low: 'May nag-send ng chat na may link', 'Nakatanggap ng suspicious na email o text'
+        - Phishing High: 'Nag-click ako ng suspicious link'
+        - Phishing Critical: 'Binigay ko ang OTP sa scammer', 'Na-scam ako sa pekeng website/email'
+        - Identity Theft Low: 'May humihinging ng personal info ko online'
+        - Identity Theft High: 'May gumamit ng ID ko para mag-loan', 'May fake account na gumagamit ng pangalan/photos ko'
+        - Identity Theft Critical: 'Ginamit ang personal info ko nang walang pahintulot'
+        - Online Fraud Low: 'May nag-aalok ng too good to be true deals'
+        - Online Fraud High: 'Na-scam ako sa online shopping'
+        - Online Fraud Critical: 'Na-scam ako sa investment/crypto scheme', 'Nawala ang pera ko sa GCash/Maya scam'
+        - Unauthorized Access Low: 'May kakaibang login attempts sa account ko'
+        - Unauthorized Access High: 'Na-hack ang social media account ko'
+        - Unauthorized Access Critical: 'May nag-access sa account ko nang walang pahintulot', 'May virus/malware ang device ko'
+        - Cyberbullying Low: 'Inaapi/minamaliit ako online'
+        - Cyberbullying High: 'May nagbabanta o nang-haharass sa akin online'
+        - Cyberbullying Critical: 'Pinapahiya ako o kinakalat ang photos/videos ko'
+
         {
-        \"category\": \" \", Based sa title at description, identify kung anong cybersecurity category ito.,
-        \"severity_level\": \"Low | Medium | High | Critical\",
-        \"suggestion\": \"Preventive measures (paano maiwasan / how to avoid), bullet points na may paliwanag bawat isa.\\n\\n If it happens / If it happens, ilagay ang dapat gawin step-by-step, gamit ang parehong language na ginamit sa Title at Description.\"
+        \"title\": \"Piliin ang ISANG title mula sa listahan na PINAKA-ANGKOP sa description. EXACT title lang.\",
+        \"category\": \"Choose from these 5 categories ONLY: Phishing, Identity Theft, Online Fraud, Unauthorized Access, or Cyberbullying\",
+        \"severity_level\": \"Low | High | Critical (Based on the criteria above, analyze the description carefully and assign the appropriate level)\",
+        \"suggestion\": \"Preventive measures (paano maiwasan / how to avoid), bullet points na may paliwanag bawat isa.\\n\\n If it happens / If it happens, ilagay ang dapat gawin step-by-step, gamit ang parehong language na ginamit sa Description.\"
         }
         ";
-
 
         $ch = curl_init("https://api.openai.com/v1/chat/completions");
 
@@ -167,6 +249,27 @@ if (logged_in()) {
                 }
 
                 if ($jsonData && isset($jsonData['category'], $jsonData['severity_level'], $jsonData['suggestion'])) {
+                    // Auto-detect title if not provided by user
+                    if (empty($title) && isset($jsonData['title'])) {
+                        $suggestedTitle = trim($jsonData['title']);
+                        // Verify it's in our list
+                        if (in_array($suggestedTitle, $availableTitles)) {
+                            $title = $suggestedTitle;
+                        } else {
+                            // Try to find closest match
+                            $bestMatch = null;
+                            $bestScore = 0;
+                            foreach ($availableTitles as $t) {
+                                similar_text(strtolower($suggestedTitle), strtolower($t), $score);
+                                if ($score > $bestScore) {
+                                    $bestScore = $score;
+                                    $bestMatch = $t;
+                                }
+                            }
+                            $title = ($bestMatch && $bestScore > 50) ? $bestMatch : "Na-scam ako sa pekeng website/email";
+                        }
+                    }
+                    
                     $category = $jsonData['category'];
                     $severity_level = $jsonData['severity_level'];
                     $suggestion = $jsonData['suggestion'];
@@ -206,6 +309,8 @@ if (logged_in()) {
         }
 
         curl_close($ch);
+        
+        } // End of if ($table != "spam")
 
 
         // Use prepared statement to prevent SQL injection
@@ -363,7 +468,7 @@ if (logged_in()) {
                     function success(){
                     Swal.fire({
                         icon: 'success',
-                        title: 'Email Sent'
+                        title: 'Report Sent'
                     })
                     }</script>";
                 }
@@ -405,7 +510,7 @@ if (logged_in()) {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>iReport</title>
+    <title>iSumbong</title>
 
     <!-- Custom fonts for this template-->
     <link href="../../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -454,20 +559,85 @@ if (logged_in()) {
                                                     <div class="row">
                                                 
                                                     <div class="form-group mb-3 col-lg-6 col-12">
-                                                        <label for="title">Incident Title</label>
-                                                        <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Nabawasan ang laman ng Gcash ko" required>
+                                                        <label for="title">Incident Title <span class="text-muted">(Optional - Auto-detected)</span></label>
+                                                        <select class="form-control" id="title" name="title">
+                                                            <option value="" selected>-- System will auto-detect / Awtomatikong pipiliin ng sistema --</option>
+                                                            <optgroup label="🟢 Phishing - Low (Nakatanggap lang)">
+                                                                <option value="May nag-send ng chat na may link">May nag-send ng chat na may link</option>
+                                                                <option value="Nakatanggap ng suspicious na email o text">Nakatanggap ng suspicious na email o text</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟡 Phishing - High (Na-click ang link)">
+                                                                <option value="Nag-click ako ng suspicious link">Nag-click ako ng suspicious link</option>
+                                                            </optgroup>
+                                                            <optgroup label="🔴 Phishing - Critical (Naibigay ang info)">
+                                                                <option value="Binigay ko ang OTP sa scammer">Binigay ko ang OTP sa scammer</option>
+                                                                <option value="Na-scam ako sa pekeng website/email">Na-scam ako sa pekeng website/email</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟢 Identity Theft - Low">
+                                                                <option value="May humihinging ng personal info ko online">May humihinging ng personal info ko online</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟡 Identity Theft - High">
+                                                                <option value="May gumamit ng ID ko para mag-loan">May gumamit ng ID ko para mag-loan</option>
+                                                                <option value="May fake account na gumagamit ng pangalan/photos ko">May fake account na gumagamit ng pangalan/photos ko</option>
+                                                            </optgroup>
+                                                            <optgroup label="🔴 Identity Theft - Critical">
+                                                                <option value="Ginamit ang personal info ko nang walang pahintulot">Ginamit ang personal info ko nang walang pahintulot</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟢 Online Fraud - Low">
+                                                                <option value="May nag-aalok ng too good to be true deals">May nag-aalok ng too good to be true deals</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟡 Online Fraud - High">
+                                                                <option value="Na-scam ako sa online shopping">Na-scam ako sa online shopping</option>
+                                                            </optgroup>
+                                                            <optgroup label="🔴 Online Fraud - Critical">
+                                                                <option value="Na-scam ako sa investment/crypto scheme">Na-scam ako sa investment/crypto scheme</option>
+                                                                <option value="Nawala ang pera ko sa GCash/Maya scam">Nawala ang pera ko sa GCash/Maya scam</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟢 Hacking - Low">
+                                                                <option value="May kakaibang login attempts sa account ko">May kakaibang login attempts sa account ko</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟡 Hacking - High">
+                                                                <option value="Na-hack ang social media account ko">Na-hack ang social media account ko</option>
+                                                            </optgroup>
+                                                            <optgroup label="🔴 Hacking - Critical">
+                                                                <option value="May nag-access sa account ko nang walang pahintulot">May nag-access sa account ko nang walang pahintulot</option>
+                                                                <option value="May virus/malware ang device ko">May virus/malware ang device ko</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟢 Cyberbullying - Low">
+                                                                <option value="Inaapi/minamaliit ako online">Inaapi/minamaliit ako online</option>
+                                                            </optgroup>
+                                                            <optgroup label="🟡 Cyberbullying - High">
+                                                                <option value="May nagbabanta o nang-haharass sa akin online">May nagbabanta o nang-haharass sa akin online</option>
+                                                            </optgroup>
+                                                            <optgroup label="🔴 Cyberbullying - Critical">
+                                                                <option value="Pinapahiya ako o kinakalat ang photos/videos ko">Pinapahiya ako o kinakalat ang photos/videos ko</option>
+                                                            </optgroup>
+                                                        </select>
+                                                        <small class="form-text text-muted"><i class="fas fa-info-circle"></i> Leave blank to let the system automatically choose based on your description.</small>
                                                     </div>
 
                                                     <!-- Date of Incident -->
                                                     <div class="form-group mb-3  col-lg-6 col-12">
-                                                        <label for="incident_date">Date and Time Discovered</label>
+                                                        <label for="incident_date">Date Reported / Petsa ng Insidente<span class="text-danger">*</span></label>
                                                         <input type="datetime-local" class="form-control" id="date" name="date" required>
+                                                        <small class="form-text text-muted">Kailan nangyari ang insidente?</small>
                                                     </div>
 
-
-                                                    <div class="form-group mb-3 col-lg-6 col-12">
-                                                        <label for="title">Location/Address</label>
-                                                        <input type="text" class="form-control" id="location" name="location" placeholder="e.g., 634 L. Deleon St. Brgy. Buhay Siniloan, Laguna" required>
+                                                    <!-- Description -->
+                                                    <div class="form-group mb-3  col-lg-12 col-12">
+                                                        <label for="description">Description<span class="text-danger">*</span></label>
+                                                        <textarea class="form-control" id="description" name="description" rows="6" placeholder="Please provide detailed information about the incident... / Magbigay ng detalyadong impormasyon tungkol sa insidente..." required></textarea>
+                                                        <small class="form-text text-muted">
+                                                            <strong>Include the following details / Isama ang sumusunod na detalye:</strong>
+                                                            <ul class="mb-0 mt-1" style="font-size: 0.875rem;">
+                                                                <li><strong>Ano ang nangyari (What happened):</strong> Ilarawan nang detalyado ang insidente</li>
+                                                                <li><strong>Kailan (When):</strong> Petsa at oras ng insidente</li>
+                                                                <li><strong>Saan (Where):</strong> Tukoy na lokasyon o lugar kung saan ito nangyari</li>
+                                                                <li><strong>Sino (Who):</strong> Mga taong sangkot (kung mayroon)</li>
+                                                                <li><strong>Paano (How):</strong> Paano nangyari o naganap ang insidente</li>
+                                                                <li><strong>Epekto (Impact):</strong> Mga resulta o epekto ng insidente</li>
+                                                            </ul>
+                                                        </small>
                                                     </div>
 
 
@@ -514,22 +684,15 @@ if (logged_in()) {
                                                         </select>
                                                     </div>-->
 
-                                                    <!-- Description -->
-                                                    <div class="form-group mb-3  col-lg-12 col-12">
-                                                        <label for="description">Description</label>
-                                                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Please provide detailed information about the incident..." required></textarea>
-                                                    </div>
-
                                                     <!-- Reporter Information -->
                                                     <div class="mb-4 col-lg-12">
                                                         <h6 class="fw-bold text-dark mb-3">
                                                             <i class="fas fa-user text-danger me-2"></i>Reporter Information
                                                         </h6>
-
                                                         <div class="row mb-3">
                                                             <div class="col-12 col-lg-6">
                                                                 <label for="fullName" class="form-label">Full Name <span class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control" id="fullName" name="full_name" placeholder="Enter full name" required>
+                                                                <input type="text" class="form-control" id="fullName" name="full_name" value="<?php echo htmlspecialchars($_SESSION['name'] ?? ''); ?>" placeholder="Enter full name" required readonly style="background-color: #e9ecef;">
                                                             </div>
                                                             <div class="col-12 col-lg-6">
                                                                 <label for="address" class="form-label">Address</label>
@@ -540,7 +703,7 @@ if (logged_in()) {
                                                         <div class="row mb-3">
                                                             <div class="col-12 col-lg-6">
                                                                 <label for="email" class="form-label">Contact Email <span class="text-danger">*</span></label>
-                                                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                                                                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($_SESSION['email'] ?? ''); ?>" placeholder="Enter email" required readonly style="background-color: #e9ecef;">
                                                             </div>
                                                             <div class="col-12 col-lg-6">
                                                                 <label for="phone" class="form-label">Contact Phone</label>
@@ -562,22 +725,15 @@ if (logged_in()) {
                                                                 <textarea class="form-control" id="actions_taken" name="actions_taken" rows="3" placeholder="Describe any immediate actions taken to address this incident (e.g., isolated affected systems, changed passwords, contacted IT support, etc.)"></textarea>
                                                             </div>
                                                         </div>
-                                                        <div class="row mb-3">
-                                                            <div class="col-12">
-                                                                <label class="form-label d-block">Evidence Available?</label>
-                                                            
-                                                                <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="checkbox" id="evidenceScreenshots" name="evidence_screenshots" value="1">
-                                                                    <label class="form-check-label" for="evidenceScreenshots">Screenshots</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                     </div>
 
                                                     <!-- Attachments -->
                                                     <div class="mb-4 col-lg-12">
                                                         <div class="form-group mb-4">
                                                             <label style="width: 100%;">Attachments</label>
+                                                            <p class="text-muted mb-3" style="font-size: 14px;">
+                                                                Mag-upload ng mga ebidensya na may kinalaman sa iyong ulat. Maaaring kasama dito ang mga screenshot ng kahina-hinalang mensahe, email, resibo ng transaksyon, error logs, o anumang dokumentong makakatulong sa pag-verify at pagsisiyasat ng insidente.
+                                                            </p>
 
                                                             <!-- Upload Area Outside the Label -->
                                                             <div id="upload-area" style="border: 2px dashed #ccc; padding: 2rem; text-align: center; border-radius: 10px; cursor: pointer;">
@@ -590,7 +746,7 @@ if (logged_in()) {
                                                             <!-- Real Hidden File Input -->
                                                             <input type="file" name="attachment[]" id="file-upload" accept=".png,.jpg,.jpeg,.pdf,.log,.txt" style="display: none;" multiple>
                                                         </div>
-                                                    </div>           
+                                                    </div>
 
                                                     <!-- Additional Information -->
                                                     <div class="mb-4 col-lg-12">

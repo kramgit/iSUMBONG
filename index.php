@@ -788,6 +788,294 @@ include('connectMySql.php');
         </div>
     </section>
 
+    <!-- Cybercrime Awareness Gallery Slider Section -->
+    <section class="py-5" style="background: #1a1a1a; position: relative; overflow: hidden;">
+        <div class="container" style="position: relative; z-index: 2;">
+            <div class="text-center mb-5">
+                <h2 class="font-weight-bold text-white mb-3">
+                    <i class="fas fa-shield-alt mr-2"></i>Cybercrime Awareness Campaign
+                </h2>
+                <p class="text-white" style="font-size: 1.1rem; opacity: 0.8;">Be vigilant and informed. Protect yourself from cyber threats.</p>
+            </div>
+            
+            <!-- Image Slider -->
+            <div class="poster-slider-container">
+                <div class="poster-slider" id="posterSlider">
+                    <!-- Slide 1 -->
+                    <div class="poster-slide active">
+                        <div class="poster-card">
+                            <img src="img/gal1.png" alt="Babala sa Cybercrime" class="poster-image">
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 2 -->
+                    <div class="poster-slide">
+                        <div class="poster-card">
+                            <img src="img/gal2.png" alt="Mag-ingat sa Online Scam" class="poster-image">
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 3 -->
+                    <div class="poster-slide">
+                        <div class="poster-card">
+                            <img src="img/gal3.jpg" alt="Think Before You Click" class="poster-image">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slider Controls -->
+                <button class="slider-btn prev-btn" onclick="changeSlide(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-btn next-btn" onclick="changeSlide(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <!-- Slider Dots -->
+                <div class="slider-dots">
+                    <span class="dot active" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                    <span class="dot" onclick="currentSlide(3)"></span>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .poster-slider-container {
+                position: relative;
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 0 60px;
+            }
+            
+            .poster-slider {
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+                border-radius: 12px;
+            }
+            
+            .poster-slide {
+                display: none;
+                animation: fadeIn 0.6s ease-in-out;
+            }
+            
+            .poster-slide.active {
+                display: block;
+            }
+            
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            
+            .poster-card {
+                background: transparent;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: none;
+            }
+            
+            .poster-image {
+                width: 100%;
+                height: auto;
+                display: block;
+                object-fit: contain;
+                border-radius: 12px;
+                max-height: 600px;
+            }
+            
+            .poster-caption {
+                padding: 25px;
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                text-align: center;
+            }
+            
+            .poster-caption h5 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 10px;
+            }
+            
+            .poster-caption p {
+                font-size: 1rem;
+                color: #5a6c7d;
+                margin: 0;
+                line-height: 1.6;
+            }
+            
+            .slider-btn {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(255, 255, 255, 0.15);
+                color: white;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                font-size: 1.2rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                z-index: 10;
+                backdrop-filter: blur(5px);
+            }
+            
+            .slider-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                border-color: rgba(255, 255, 255, 0.5);
+                transform: translateY(-50%) scale(1.1);
+            }
+            
+            .prev-btn {
+                left: 0;
+            }
+            
+            .next-btn {
+                right: 0;
+            }
+            
+            .slider-dots {
+                text-align: center;
+                padding: 30px 0 10px;
+            }
+            
+            .dot {
+                height: 12px;
+                width: 12px;
+                margin: 0 6px;
+                background-color: rgba(255, 255, 255, 0.4);
+                border-radius: 50%;
+                display: inline-block;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .dot:hover {
+                background-color: rgba(255, 255, 255, 0.6);
+            }
+            
+            .dot.active {
+                background-color: #ffc107;
+                width: 12px;
+                height: 12px;
+            }
+            
+            @media (max-width: 768px) {
+                .poster-slider-container {
+                    padding: 0 50px;
+                }
+                
+                .poster-image {
+                    max-height: 450px;
+                    border-radius: 8px;
+                }
+                
+                .slider-btn {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 1rem;
+                }
+                
+                .dot {
+                    height: 10px;
+                    width: 10px;
+                    margin: 0 5px;
+                }
+                
+                .dot.active {
+                    width: 10px;
+                    height: 10px;
+                }
+            }
+            
+            @media (max-width: 576px) {
+                .poster-slider-container {
+                    padding: 0 40px;
+                }
+                
+                .poster-image {
+                    max-height: 350px;
+                    border-radius: 6px;
+                }
+                
+                .slider-btn {
+                    width: 35px;
+                    height: 35px;
+                    font-size: 0.9rem;
+                }
+            }
+        </style>
+        
+        <script>
+            let currentSlideIndex = 1;
+            let slideInterval;
+            
+            // Auto-play slider
+            function startAutoPlay() {
+                slideInterval = setInterval(() => {
+                    changeSlide(1);
+                }, 5000); // Change slide every 5 seconds
+            }
+            
+            function stopAutoPlay() {
+                clearInterval(slideInterval);
+            }
+            
+            function changeSlide(direction) {
+                stopAutoPlay();
+                showSlide(currentSlideIndex += direction);
+                startAutoPlay();
+            }
+            
+            function currentSlide(n) {
+                stopAutoPlay();
+                showSlide(currentSlideIndex = n);
+                startAutoPlay();
+            }
+            
+            function showSlide(n) {
+                const slides = document.getElementsByClassName('poster-slide');
+                const dots = document.getElementsByClassName('dot');
+                
+                if (n > slides.length) {
+                    currentSlideIndex = 1;
+                }
+                if (n < 1) {
+                    currentSlideIndex = slides.length;
+                }
+                
+                // Hide all slides
+                for (let i = 0; i < slides.length; i++) {
+                    slides[i].classList.remove('active');
+                }
+                
+                // Remove active from all dots
+                for (let i = 0; i < dots.length; i++) {
+                    dots[i].classList.remove('active');
+                }
+                
+                // Show current slide and activate dot
+                slides[currentSlideIndex - 1].classList.add('active');
+                dots[currentSlideIndex - 1].classList.add('active');
+            }
+            
+            // Start auto-play when page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                startAutoPlay();
+            });
+            
+            // Pause on hover
+            document.getElementById('posterSlider').addEventListener('mouseenter', stopAutoPlay);
+            document.getElementById('posterSlider').addEventListener('mouseleave', startAutoPlay);
+        </script>
+    </section>
+
     <!-- Features Section -->
     <section class="py-4 py-md-5 features-section">
         <div class="container">
@@ -914,12 +1202,12 @@ include('connectMySql.php');
                 
                 <!-- Hacking/Unauthorized Access -->
                 <div class="col-6 col-md-4 col-lg-4 mb-3">
-                    <div class="card h-100 border-0 shadow threat-info-card" onclick="showThreatModal('hacking')" style="cursor: pointer;">
+                    <div class="card h-100 border-0 shadow threat-info-card" onclick="showThreatModal('unauthorized_access')" style="cursor: pointer;">
                         <div class="card-body text-center">
                             <div class="threat-icon mb-2" style="background: #6f42c1;">
                                 <i class="fas fa-user-lock text-white"></i>
                             </div>
-                            <h5 class="card-title font-weight-bold" style="color: #6f42c1;">Pagpasok Nang Walang Pahintulot (Hacking)</h5>
+                            <h5 class="card-title font-weight-bold" style="color: #6f42c1;">Pagpasok Nang Walang Pahintulot (Unauthorized Access)</h5>
                             <p class="card-text">Ang iligal na pag-access sa mga computer system, network, o account nang walang awtorisasyon.</p>
                             <ul class="list-unstyled text-left small mt-3">
                                 <li><i class="fas fa-exclamation-circle mr-2" style="color: #6f42c1;"></i>Pag-agaw ng account</li>
@@ -1638,13 +1926,13 @@ include('connectMySql.php');
                         </div>
                     `
                 },
-                hacking: {
-                    title: '<i class="fas fa-user-lock mr-2"></i>Pagpasok Nang Walang Pahintulot (Hacking)',
+                unauthorized_access: {
+                    title: '<i class="fas fa-user-lock mr-2"></i>Pagpasok Nang Walang Pahintulot (Unauthorized Access)',
                     content: `
-                        <h5 class="mb-3" style="color: #6f42c1;">Ano ang Hacking?</h5>
-                        <p>Ang <strong>hacking</strong> ay ang iligal na pagpasok sa inyong computer, cellphone, account, o network nang walang pahintulot. Ginagawa ito upang nakawin ang impormasyon, pera, o para sirain ang inyong device.</p>
+                        <h5 class="mb-3" style="color: #6f42c1;">Ano ang Unauthorized Access?</h5>
+                        <p>Ang <strong>unauthorized access</strong> ay ang iligal na pagpasok sa inyong computer, cellphone, account, o network nang walang pahintulot. Ginagawa ito upang nakawin ang impormasyon, pera, o para sirain ang inyong device.</p>
                         
-                        <h5 class="mt-4 mb-3" style="color: #6f42c1;">Paano Nangyayari ang Hacking?</h5>
+                        <h5 class="mt-4 mb-3" style="color: #6f42c1;">Paano Nangyayari ang Unauthorized Access?</h5>
                         <div class="alert alert-light" style="border-left: 4px solid #6f42c1;">
                             <p><strong>1. Mahina ang Password</strong><br>
                             Kung simple lang ang password (tulad ng "123456" o birthday), madali itong hulaan ng hacker.</p>
@@ -1668,7 +1956,7 @@ include('connectMySql.php');
                             <li><i class="fas fa-bell mr-2" style="color: #6f42c1;"></i>Tumatanggap ng notification tungkol sa device na hindi ninyo alam</li>
                         </ul>
                         
-                        <h5 class="mt-4 mb-3" style="color: #6f42c1;">Paano Maiwasan ang Hacking?</h5>
+                        <h5 class="mt-4 mb-3" style="color: #6f42c1;">Paano Maiwasan ang Unauthorized Access?</h5>
                         <div class="alert alert-success">
                             <p class="mb-2"><i class="fas fa-key text-success mr-2"></i><strong>Gumamit ng malakas na password</strong> - combination ng letters, numbers, at symbols</p>
                             <p class="mb-2"><i class="fas fa-mobile-alt text-success mr-2"></i><strong>I-on ang Two-Factor Authentication</strong> (2FA) para dagdag proteksyon</p>
